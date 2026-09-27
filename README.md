@@ -10,12 +10,14 @@ Two questions, in order:
 
 1. **Does memory of a place predict what happens there later?** — on real infrastructure-camera data ([Part 1](#part-1--real-data-does-memory-predict)).
 2. **Does it help a robotaxi drive?** — closed-loop simulation calibrated on that data ([Part 2](#part-2--closed-loop-simulation-does-memory-help-a-robotaxi-drive)).
+3. **Why fixed cameras and not the fleet's own memory** (Mobileye REM, CHAMP)? — both, on the same real traffic ([Part 3](#part-3--fleet-memory-vs-infrastructure-memory)).
 
 **Headline:** on a real Washington DC block, 10 hours of location memory lets an occlusion-aware robotaxi hit
 **26% fewer pedestrians at the same trip time** (95% CI 20–33%), as much as perfect knowledge of the place.
 Live infrastructure cameras are a far bigger lever (≈ 99% fewer), but only while they work: a camera that fails
 *silently* is the most dangerous state in the study, and a stale memory is worse than none unless it is only
-allowed to *add* caution.
+allowed to *add* caution. A fleet of cars can build the same memory, but it learns at the pace of equipped cars
+passing by: on this rush-hour block a 10% fleet needs ~4× the calendar time of a fixed camera, a 3% fleet ~16×.
 
 # Part 1 — real data: does memory predict?
 
@@ -40,7 +42,7 @@ Every score compares the memory with the **location-agnostic prior**, which is a
 | Which lane segments produce hard braking (≤ −3.5 m/s²)? | AUC **0.85**, Brier skill **+0.08** (CV +0.085…+0.115) | pooled rate 5.7% | fig. 3a, calibrated |
 | Which way will a vehicle that changes direction be heading in 3 s? | **59%** correct, P(true direction) = 0.52 | 19%, 0.33 | fig. 4a, +0.59 bits/sample |
 | 3 s trajectory error of turning vehicles (> 30°) | **5.22 m** (−18% [−16, −20]) | 6.38 m (constant velocity) | fig. 4b |
-| Pedestrians on/entering a car's path hidden by other vehicles | 12% of encounters hidden at first, 5% give the infrastructure ≥ 1 s head start (upper bound; buses/trucks only: 0.9% / 0.3%) | — | fig. 5, 3,042 virtual-ego encounters |
+| Pedestrians on/entering a car's path hidden by other vehicles | 10% of encounters hidden at first, 4% give the infrastructure ≥ 1 s head start (upper bound; buses/trucks only: 0.7% / 0.3%) | — | fig. 5, 3,042 virtual-ego encounters |
 | Bandwidth for one car | memory tile **2.7 KB once** + live objects **~12 kbit/s** | raw video ≈ 180 Mbit/s (12 × 4K) | fig. 6 |
 
 **Honest negatives, and why they are informative**
@@ -125,6 +127,44 @@ do not cross are not simulated), which flatters live infrastructure; and with th
 drives at the limit and brakes hard twice as often (101 vs 50 per 1,000 traversals) because attentive
 pedestrians accept 3 s gaps: comfort-aware planning with live data is future work.
 
+# Part 3 — fleet memory vs infrastructure memory
+
+A fleet memory only knows what passing cars happened to see, and records a pedestrian **where and when a car first
+saw it**. On the real TGSIM traffic every driving vehicle (4,828) is a potential fleet car with a 50 m roof sensor
+whose 2-D line of sight can be blocked by other vehicles (parked and queued cars keep their orientation); a random
+share of them is equipped. The fleet memory is built from those sightings and scored on the same held-out 40
+minutes as the camera memory. In the simulator (E7), the share of time each metre of kerb is watched by equipped
+cars, measured on the real traffic of the block (184 driving vehicles per hour), thins the memory's observations.
+
+| Fleet penetration (equipped cars / h through the block) | Pedestrians seen | Held-out gain, all / outside crosswalks | Calendar time for the full planning benefit (E7) |
+|---|---|---|---|
+| **fixed cameras** | 100% | **2.27 / 0.84 bits** | **≈ 1 h** |
+| 100% (184 / h) | 98% (0.2 s late, 0.2 m off) | 2.24 / 0.81 | ≈ 1 h |
+| 30% (≈ 55 / h) | 71% | 2.14 / 0.71 | — |
+| 10% (≈ 18 / h) | 37% | 1.96 / 0.62 | ≈ 4 h (after 1 h: barely better than no memory) |
+| 3% (≈ 5.5 / h) | 17% | 1.62 / 0.37 | ≈ 16 h (after 1 h: **worse** than no memory) |
+
+![Fleet, real data](results/figures/fleet1_real_data.png)
+![Fleet, simulator](results/figures/fleet2_simulator.png)
+
+**Reading**
+
+* **Quality is not the fleet's problem, exposure is.** When a car is there, it sees the pedestrian almost as well
+  as a camera (0.2 s late, 0.2 m off). Memory quality is set by *equipped cars per hour × hours*: the calendar
+  time a fleet needs scales roughly with 1 / penetration.
+* This block at rush hour is the **fleet's best case** (congested, a car always nearby). On quiet streets, at night
+  or at realistic robotaxi penetrations of a few percent, a fleet collects the equivalent of an hour of camera
+  memory only after days — and a thin memory is worse than none for the planner.
+* Pedestrians **outside crosswalks** (the hidden-pedestrian risk) are where the fleet lags most.
+* Per-location exposure correction made no difference here because the fleet watched the kerb fairly uniformly
+  (19–36% of the time at 10%); it matters where coverage is uneven (tested in `tests/test_fleet.py`).
+* The fleet here is idealised (perfect detection within 50 m, every sighting uploaded) and can only observe
+  pedestrians the cameras also tracked, so these are **upper bounds for the fleet**.
+
+**So what fixed infrastructure uniquely adds**: memory in hours instead of days, independent of traffic;
+live perception beyond the car's line of sight (Part 2: ≈ 99% fewer collisions, while it works); and exposure
+for rare events. The two are complementary: a fleet can keep a camera's memory fresh where there is no camera.
+
 # Details
 
 ## What the memory holds
@@ -180,6 +220,7 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 
 ```bash
 .venv/bin/python -m cityprior.sim.experiments   # Part 2, ~8 min; writes results/sim_metrics.json, figures/sim*.png
+.venv/bin/python -m cityprior.fleet             # Part 3, ~8 min; writes results/fleet_metrics.json, figures/fleet*.png
 ```
 
 ## Layout
@@ -202,13 +243,15 @@ src/cityprior/
     engine.py       vectorised closed-loop simulator, rare-event summary
     experiments.py  E1–E6 (Part 2)
     figures.py
-tests/           geometry, TTC, braking detector, memory, simulator consistency
+  fleet.py        fleet sightings (line of sight on real traffic), fleet memory, E7 (Part 3)
+  fleet_figures.py
+tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight
 ```
 
 ## Next steps
 
-1. **Infrastructure memory vs fleet memory**: build the prior only from what passing vehicles could see (the
-   occlusion model of Part 1) and compare in the simulator: the case for fixed sensors over fleet data.
+1. **Hybrid memory**: camera memory kept fresh by fleet sightings where cameras are absent; time-of-day
+   conditioning (fleet exposure collapses off-peak).
 2. **Change detection** for memory freshness (the rule-1 counterpart): detect that the hotspot moved from live
    camera or fleet observations and measure time-to-recover.
 3. **False alarms and spoofing** from the camera (sidewalk walkers, injected / deleted objects).

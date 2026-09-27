@@ -79,14 +79,24 @@ def expected_risk(v: np.ndarray, lam_true: np.ndarray, p: SimParams) -> float:
     return float(np.trapezoid(lam_true * band(v, p), p.grid))
 
 
-def estimate_memory(truth: Profile, hours: float, rng: np.random.Generator, p_obs: float = 0.95,
+def estimate_memory(truth: Profile, hours: float, rng: np.random.Generator,
+                    p_obs: float | np.ndarray = 0.95, exposure_corrected: bool = True,
                     sigma_m: float = 3.0, prior_seconds: float = 1800.0) -> Profile:
     """Location memory learned by watching the street for `hours`: Poisson counts
     of observed emergences per metre, smoothed and shrunk towards the street mean
-    with `prior_seconds` of pseudo-observation."""
+    with `prior_seconds` of pseudo-observation.
+
+    p_obs: probability that an emergence at x is observed at all (scalar for a
+    fixed camera; a profile q(x) for a fleet, which only sees what passing cars
+    see). exposure_corrected: divide by q(x) per location (the estimator knows
+    how long each place was watched) instead of by its average."""
     T = hours * 3600.0
-    counts = rng.poisson(truth.lam * T * p_obs)
-    smooth = gaussian_filter1d(counts.astype(float), sigma_m, mode="nearest") / p_obs
+    q = np.broadcast_to(np.asarray(p_obs, float), truth.lam.shape)
+    counts = rng.poisson(truth.lam * T * q).astype(float)
+    if exposure_corrected:
+        smooth = gaussian_filter1d(counts / np.maximum(q, 0.02), sigma_m, mode="nearest")
+    else:
+        smooth = gaussian_filter1d(counts, sigma_m, mode="nearest") / max(q.mean(), 1e-6)
     lam_bar = smooth.mean() / T if T > 0 else truth.mean
     lam = (smooth + prior_seconds * lam_bar) / (T + prior_seconds)
     return Profile(truth.x, lam, {"hours": hours, "events_observed": int(counts.sum())})

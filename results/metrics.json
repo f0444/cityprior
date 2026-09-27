@@ -519,20 +519,20 @@
   "n_obs": 23885,
   "n_encounters": 3042,
   "occluded_all": {
-   "share_obs_occluded": 0.11655850952480637,
-   "share_obs_occluded_within_20m": 0.05709495234733498,
-   "share_encounters_hidden_at_first": 0.12163050624589086,
-   "share_encounters_lead_ge_1s": 0.048980933596318214,
-   "share_encounters_never_seen_by_ego": 0.0670611439842209,
-   "median_lead_s_when_hidden": 0.7999999999992724
+   "share_obs_occluded": 0.09642034749842998,
+   "share_obs_occluded_within_20m": 0.04800564772326156,
+   "share_encounters_hidden_at_first": 0.1042077580539119,
+   "share_encounters_lead_ge_1s": 0.0381328073635766,
+   "share_encounters_never_seen_by_ego": 0.05259697567389875,
+   "median_lead_s_when_hidden": 0.6000000000003638
   },
   "occluded_tall": {
-   "share_obs_occluded": 0.007619845091061336,
-   "share_obs_occluded_within_20m": 0.004235792446170138,
-   "share_encounters_hidden_at_first": 0.008547008547008548,
-   "share_encounters_lead_ge_1s": 0.003287310979618672,
-   "share_encounters_never_seen_by_ego": 0.0046022353714661405,
-   "median_lead_s_when_hidden": 0.700000000000216
+   "share_obs_occluded": 0.00544274649361524,
+   "share_obs_occluded_within_20m": 0.003265090010589481,
+   "share_encounters_hidden_at_first": 0.006903353057199211,
+   "share_encounters_lead_ge_1s": 0.0029585798816568047,
+   "share_encounters_never_seen_by_ego": 0.004273504273504274,
+   "median_lead_s_when_hidden": 0.8000000000000682
   }
  },
  "message": {

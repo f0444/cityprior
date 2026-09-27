@@ -15,7 +15,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .data import DT, TALL_TYPES
+from .data import DT, TALL_TYPES, stable_heading
 from .geometry import segment_hits_boxes
 
 
@@ -30,6 +30,7 @@ def virtual_ego_occlusion(
 ) -> pd.DataFrame:
     """Rows: (ego, pedestrian, frame) where the pedestrian is ahead of the ego and
     on / heading into its straight-line path, with occlusion flags."""
+    df = df.assign(heading=stable_heading(df))       # parked / queued cars keep their orientation
     sampled = df[df["frame"] % every_frames == 0]
     ego = sampled[(sampled["cls"] == "veh") & (sampled["speed"] >= ego_min_speed)]
     ego = ego[["frame", "track", "x", "y", "heading", "length", "speed"]]

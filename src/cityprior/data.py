@@ -141,3 +141,14 @@ def drop_flicker(df: pd.DataFrame, min_duration: float = 1.0) -> pd.DataFrame:
     key = "track" if "track" in df else "id"
     dur = df.groupby(key)["t"].transform(lambda s: s.max() - s.min())
     return df[dur >= min_duration].reset_index(drop=True)
+
+
+def stable_heading(df: pd.DataFrame, min_speed: float = 1.0) -> pd.Series:
+    """Vehicle orientation that survives stops: the heading of the last sample
+    where the vehicle moved (forward/backward filled within the track). The
+    velocity heading of a stopped vehicle is noise, which would spin its footprint."""
+    moving = df["speed"] >= min_speed
+    h = df["heading"].where(moving)
+    key = "track" if "track" in df else "id"
+    h = h.groupby(df[key]).transform(lambda s: s.ffill().bfill())
+    return h.fillna(df["heading"])
