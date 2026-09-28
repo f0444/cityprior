@@ -12,6 +12,8 @@ Two questions, in order:
 2. **Does it help a robotaxi drive?** — closed-loop simulation calibrated on that data ([Part 2](#part-2--closed-loop-simulation-does-memory-help-a-robotaxi-drive)).
 3. **Why fixed cameras and not the fleet's own memory** (Mobileye REM, CHAMP)? — both, on the same real traffic ([Part 3](#part-3--fleet-memory-vs-infrastructure-memory)).
 
+**Paper (working draft):** [paper/main.pdf](paper/main.pdf) — build with `paper/build.sh` (pdflatex + bibtex).
+
 **Headline:** on a real Washington DC block, 10 hours of location memory lets an occlusion-aware robotaxi hit
 **26% fewer pedestrians at the same trip time** (95% CI 20–33%), as much as perfect knowledge of the place.
 Live infrastructure cameras are a far bigger lever (≈ 99% fewer), but only while they work: a camera that fails
