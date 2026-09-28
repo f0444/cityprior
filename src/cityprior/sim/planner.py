@@ -79,12 +79,31 @@ def expected_risk(v: np.ndarray, lam_true: np.ndarray, p: SimParams) -> float:
     return float(np.trapezoid(lam_true * band(v, p), p.grid))
 
 
+def memory_from_counts(x: np.ndarray, counts: np.ndarray, seconds: float, q: float | np.ndarray = 0.95,
+                       exposure_corrected: bool = True, sigma_m: float = 3.0, prior_seconds: float = 1800.0,
+                       fallback_mean: float | None = None, meta: dict | None = None) -> Profile:
+    """Location memory from observed emergence counts per metre gathered over
+    `seconds` of (possibly discounted) watching: smoothed, divided by the
+    observability q(x), and shrunk towards the street mean with `prior_seconds`
+    of pseudo-observation. Nearly no data -> nearly the street mean."""
+    q = np.broadcast_to(np.asarray(q, float), np.shape(counts))
+    counts = np.asarray(counts, float)
+    if exposure_corrected:
+        smooth = gaussian_filter1d(counts / np.maximum(q, 0.02), sigma_m, mode="nearest")
+    else:
+        smooth = gaussian_filter1d(counts, sigma_m, mode="nearest") / max(q.mean(), 1e-6)
+    if seconds > 0 and smooth.sum() > 0:
+        lam_bar = smooth.mean() / seconds
+    else:
+        lam_bar = fallback_mean if fallback_mean is not None else 0.0
+    lam = (smooth + prior_seconds * lam_bar) / (seconds + prior_seconds)
+    return Profile(np.asarray(x), lam, meta or {})
+
+
 def estimate_memory(truth: Profile, hours: float, rng: np.random.Generator,
                     p_obs: float | np.ndarray = 0.95, exposure_corrected: bool = True,
                     sigma_m: float = 3.0, prior_seconds: float = 1800.0) -> Profile:
-    """Location memory learned by watching the street for `hours`: Poisson counts
-    of observed emergences per metre, smoothed and shrunk towards the street mean
-    with `prior_seconds` of pseudo-observation.
+    """Location memory learned by watching the street for `hours`.
 
     p_obs: probability that an emergence at x is observed at all (scalar for a
     fixed camera; a profile q(x) for a fleet, which only sees what passing cars
@@ -93,13 +112,9 @@ def estimate_memory(truth: Profile, hours: float, rng: np.random.Generator,
     T = hours * 3600.0
     q = np.broadcast_to(np.asarray(p_obs, float), truth.lam.shape)
     counts = rng.poisson(truth.lam * T * q).astype(float)
-    if exposure_corrected:
-        smooth = gaussian_filter1d(counts / np.maximum(q, 0.02), sigma_m, mode="nearest")
-    else:
-        smooth = gaussian_filter1d(counts, sigma_m, mode="nearest") / max(q.mean(), 1e-6)
-    lam_bar = smooth.mean() / T if T > 0 else truth.mean
-    lam = (smooth + prior_seconds * lam_bar) / (T + prior_seconds)
-    return Profile(truth.x, lam, {"hours": hours, "events_observed": int(counts.sum())})
+    return memory_from_counts(truth.x, counts, T, q, exposure_corrected, sigma_m, prior_seconds,
+                              fallback_mean=truth.mean,
+                              meta={"hours": hours, "events_observed": int(counts.sum())})
 
 
 def camera_coverage(fraction: float, p: SimParams) -> np.ndarray:

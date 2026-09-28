@@ -18,7 +18,7 @@ Two questions, in order:
 **26% fewer pedestrians at the same trip time** (95% CI 20–33%), as much as perfect knowledge of the place.
 Live infrastructure cameras are a far bigger lever (≈ 99% fewer), but only while they work: a camera that fails
 *silently* is the most dangerous state in the study, and a stale memory is worse than none unless it is only
-allowed to *add* caution. A fleet of cars can build the same memory, but it learns at the pace of equipped cars
+allowed to *add* caution — or a change detector notices the change, which a camera does within an hour. A fleet of cars can build the same memory, but it learns at the pace of equipped cars
 passing by: on this rush-hour block a 10% fleet needs ~4× the calendar time of a fixed camera, a 3% fleet ~16×.
 
 # Part 1 — real data: does memory predict?
@@ -106,16 +106,20 @@ pedestrian walking at the planner's design speed, i.e. planner model and simulat
 | Partial camera coverage | memory still cuts collisions 10–36%, depending on how uneven the *uncovered* part is |
 | Stale memory (hotspot moved 21 m to the quietest spot) | symmetric memory **worse than none** (2.52 vs 2.00 / 10k); a caution floor barely helps (2.44); **"may only add caution" → 1.62** (+1.4 s) |
 | Camera fails silently vs with heartbeat | **3.83 / 10k** (1.8× worse than no infrastructure) vs **1.54** falling back to memory |
+| Keeping memory fresh (E8): the hotspot moves while observations keep arriving | a change detector (1 h windowed G-test) notices within **45 min** with a camera (0.3 false alarms / month); mean collisions over the next 24 h: **1.47** vs 2.47 never updated, 1.99 adding all observations, 1.65 forgetting (which costs **+8%** when nothing changes) |
+| …same with a fleet as the only observer | 10% fleet: median 1.25 h, 10% of changes unnoticed within a day; 3% fleet: only 19% noticed within a day |
 
 ![Pareto](results/figures/sim1_pareto.png)
 ![Coverage, history, heterogeneity](results/figures/sim2_coverage_history.png)
 ![Robustness](results/figures/sim3_robustness.png)
+![Change detection](results/figures/sim4_change_detection.png)
 
 **Design rules that fall out of the experiments**
 
-1. **Asymmetric trust.** A location prior may *add* caution freely; *removing* caution needs fresh evidence
-   (change detection, live confirmation). The cost is small: −21% instead of −26% collisions at equal time when
-   the memory is right; the gain is large when it is wrong.
+1. **Asymmetric trust, plus a change detector.** A location prior may *add* caution freely; *removing* caution
+   needs fresh evidence. The cost is small: −21% instead of −26% collisions at equal time when the memory is right;
+   the gain is large when it is wrong. A statistical change detector on live observations brings a stale memory
+   back within about an hour, without the steady-state cost of simply forgetting old data.
 2. **Trust must expire.** Live "this area is clear" is the most valuable and the most dangerous message: every
    message needs an age, and a missing heartbeat must revert the car to its prior.
 3. **Where to invest is predictable.** The benefit of memory tracks one number per place,
@@ -223,6 +227,7 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 ```bash
 .venv/bin/python -m cityprior.sim.experiments   # Part 2, ~8 min; writes results/sim_metrics.json, figures/sim*.png
 .venv/bin/python -m cityprior.fleet             # Part 3, ~8 min; writes results/fleet_metrics.json, figures/fleet*.png
+.venv/bin/python -m cityprior.sim.change        # E8, ~4 min; writes results/change_metrics.json, figures/sim4*.png
 ```
 
 ## Layout
@@ -244,17 +249,16 @@ src/cityprior/
     planner.py      occlusion risk model, speed profiles, memory estimation, camera coverage
     engine.py       vectorised closed-loop simulator, rare-event summary
     experiments.py  E1–E6 (Part 2)
+    change.py       E8: keeping memory fresh (update strategies, sequential change detector)
     figures.py
   fleet.py        fleet sightings (line of sight on real traffic), fleet memory, E7 (Part 3)
   fleet_figures.py
-tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight
+tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection
 ```
 
 ## Next steps
 
 1. **Hybrid memory**: camera memory kept fresh by fleet sightings where cameras are absent; time-of-day
    conditioning (fleet exposure collapses off-peak).
-2. **Change detection** for memory freshness (the rule-1 counterpart): detect that the hotspot moved from live
-   camera or fleet observations and measure time-to-recover.
-3. **False alarms and spoofing** from the camera (sidewalk walkers, injected / deleted objects).
-4. Longer, multi-condition real data (V2X-Seq, inD, SinD) for weather / time-of-day conditioning and rare events.
+2. **False alarms and spoofing** from the camera (sidewalk walkers, injected / deleted objects).
+3. Longer, multi-condition real data (V2X-Seq, inD, SinD) for weather / time-of-day conditioning and rare events.

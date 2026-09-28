@@ -213,3 +213,87 @@ def make_all(out: Path, res: dict):
     fig_pareto(out / "sim1_pareto.png", res)
     fig_coverage_history(out / "sim2_coverage_history.png", res)
     fig_robustness(out / "sim3_robustness.png", res)
+
+
+STRATEGY_STYLE = {
+    "static · camera": ("#4a3aa7", "--", "never updated"),
+    "cumulative · camera": ("#eda100", "-", "adds all observations"),
+    "forgetting · camera": ("#e87ba4", "-", "forgets (half-life 4 h)"),
+    "detect · camera": (BLUE, "-", "detects change + resets (camera)"),
+    "detect · fleet 10%": (ORANGE, "-", "detects change + resets (fleet 10%)"),
+}
+
+
+def _time_average(hours, values, until: float = 24.0) -> float:
+    h, v = np.asarray(hours, float), np.asarray(values, float)
+    keep = h <= until
+    return float(np.trapezoid(v[keep], h[keep]) / until)
+
+
+def fig_change(path: Path, res: dict):
+    hours = np.array(res["eval_hours"])
+    xplot = np.where(hours == 0, 0.125, hours)
+    ref = res["references"]
+    fig, axs = plt.subplots(1, 3, figsize=(19, 5.2), gridspec_kw={"width_ratios": [1.25, 1.1, 1.0]})
+
+    ax = axs[0]
+    ax.axhline(ref["no_memory"]["collisions_per_10k"], color=GRAY, lw=1.5, ls="--")
+    ax.axhline(ref["perfect_memory"]["collisions_per_10k"], color=AQUA, lw=1.5, ls="--")
+    ax.text(0.13, ref["no_memory"]["collisions_per_10k"], "no memory", va="bottom", fontsize=9, color=INK2)
+    ax.text(0.13, ref["perfect_memory"]["collisions_per_10k"], "fresh memory", va="top", fontsize=9, color=INK2)
+    for key, runs in res["curves"].items():
+        color, ls, label = STRATEGY_STYLE[key]
+        y = np.mean([[r["collisions_per_10k"] for r in run] for run in runs], axis=0)
+        ax.plot(xplot, y, color=color, ls=ls, lw=2, marker="o", ms=4, label=label)
+    ax.set_xscale("log")
+    ticks = [0.125, 0.5, 1, 2, 4, 8, 24, 48]
+    ax.set_xticks(ticks, ["0", "0.5", "1", "2", "4", "8", "24", "48"])
+    ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+    ax.set_xlabel("hours since the hotspot moved (log scale)")
+    ax.set_ylabel("collisions per 10,000 traversals")
+    ax.set_title("a  Recovery after the hotspot moved")
+    ax.legend(loc="upper right", fontsize=8.5)
+    ax.grid(True, color=GRID, lw=0.6)
+
+    ax = axs[1]
+    keys = list(res["curves"])
+    after = [np.mean([_time_average(hours, [r["collisions_per_10k"] for r in run]) for run in res["curves"][k]])
+             for k in keys]
+    steady = [np.mean([v["collisions_per_10k"] for v in res["steady_state_no_change"][k]]) for k in keys]
+    x = np.arange(len(keys))
+    ax.bar(x - 0.19, after, 0.36, color=INK2, label="first 24 h after a change")
+    ax.bar(x + 0.19, steady, 0.36, color="#c9c8c3", label="no change (price of vigilance)")
+    for xi, a, b in zip(x, after, steady):
+        ax.text(xi - 0.19, a, f"{a:.2f}", ha="center", va="bottom", fontsize=8.5, color=INK)
+        ax.text(xi + 0.19, b, f"{b:.2f}", ha="center", va="bottom", fontsize=8.5, color=INK)
+    ax.axhline(ref["no_memory"]["collisions_per_10k"], color=GRAY, lw=1.2, ls="--")
+    short = {"static · camera": "never\nupdated", "cumulative · camera": "adds all\nobservations",
+             "forgetting · camera": "forgets\n(half-life 4 h)", "detect · camera": "detect + reset\n(camera)",
+             "detect · fleet 10%": "detect + reset\n(fleet 10%)"}
+    ax.set_xticks(x, [short[k] for k in keys], fontsize=8.5)
+    ax.set_ylabel("collisions per 10,000 traversals")
+    ax.set_ylim(0, max(after + steady) * 1.25)
+    ax.set_title("b  Cost after a change vs cost when nothing changes")
+    ax.legend(loc="upper right", fontsize=8.5)
+    ax.grid(True, axis="y", color=GRID, lw=0.6)
+
+    ax = axs[2]
+    colors = {"camera": BLUE, "fleet 10%": ORANGE, "fleet 3%": "#f7b394"}
+    for name, st in res["detector"].items():
+        d = np.sort(np.array([v if v is not None else np.inf for v in st["delays"]]))
+        finite = d[np.isfinite(d)]
+        yv = np.arange(1, len(finite) + 1) / len(d)
+        ax.step(np.r_[0, finite], np.r_[0, yv], where="post", color=colors[name], lw=2,
+                label=(f"{name}: median {st['median_delay_h']:.2f} h" if st["median_delay_h"] is not None
+                       else f"{name}: {100 * st['share_detected_24h']:.0f}% found in 24 h")
+                + f", {st['false_alarms_per_30_days']:.2f} false alarms / 30 days")
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 1.02)
+    ax.set_xlabel("hours until the change is detected")
+    ax.set_ylabel("share of changes detected")
+    ax.set_title("c  Detection delay (200 simulated changes each)")
+    ax.legend(loc="lower right", fontsize=8.5)
+    ax.grid(True, color=GRID, lw=0.6)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
