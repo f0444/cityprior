@@ -33,12 +33,13 @@ Location Memory from Infrastructure Cameras as a Prior for Autonomous Driving}
 \begin{abstract}
 A robotaxi perceives a place only while it is there; a fixed camera watches the same place for hours, days and months.
 We ask whether this long-term \emph{location memory} is worth anything to an autonomous vehicle, and when it becomes a liability.
-Memory is represented as exposure-normalised sufficient statistics with uncertainty---where pedestrians step onto the road, how traffic turns, where vehicles brake hard---and is evaluated in three steps.
+Memory is represented as exposure-normalised sufficient statistics with uncertainty---where pedestrians step onto the road, how traffic turns, where vehicles brake hard---and is evaluated in four steps.
 (i)~On two hours of real trajectories from 12 fixed 4K infrastructure cameras in Washington, DC (TGSIM Foggy Bottom), memory built from the first 79 minutes predicts the last 40:
 73\pct{} of held-out pedestrian road entries fall inside the 10\pct{} of road area it ranks highest (2.27 bits per entry over a uniform prior), and for vehicles that change direction it picks their heading 3\,s ahead correctly 59\pct{} of the time, against 19\pct{} for area-wide statistics.
 (ii)~In a closed-loop occlusion simulation calibrated on the same data, an occlusion-aware planner with 10 hours of memory has 26\pct{} fewer pedestrian collisions at equal trip time (95\pct{} CI 20--33\pct) than a planner that knows only the street's average pedestrian rate, matching perfect knowledge; the benefit grows with the spatial unevenness of pedestrian activity, from 0 to 56\pct.
 Two failure modes are severe: stale memory is worse than none, and a live camera that fails silently is the most dangerous state studied. Letting memory only \emph{add} caution, expiring live information with a heartbeat, and a sequential change detector, which notices a moved hotspot within an hour on camera data, remove most of the harm. Letting the vehicle's own sensors take precedence wherever they can see neutralises phantom pedestrians injected into the camera feed, and a fleet audit exposes a camera that silently drops pedestrians within hours.
 (iii)~Treating every real vehicle in the data as a potential fleet car shows that a fleet can learn the same memory, but at the pace of equipped cars passing by: at 10\pct{} penetration it needs roughly four times the calendar time of a fixed camera.
+(iv)~A full day at an instrumented intersection in Braunschweig (DLR UT) shows that location memory and the live phase of the traffic lights are complementary: together they cut the error of where a vehicle approaching a light will be in 3\,s from 4.8\,m (constant velocity) to 2.7\,m, against 3.9 and 4.2\,m for memory or live phase alone; which light governs which place is itself learned from memory.
 \end{abstract}
 
 % ============================================================================
@@ -64,6 +65,7 @@ The questions are therefore empirical: does memory predict what happens later, d
 \item Evidence on real infrastructure-camera data that memory predicts held-out behaviour, together with its honest limits: rare conflicts are statistically invisible in two hours, and signal-driven stop-and-go dominates vehicle prediction error (\S\ref{sec:real}).
 \item A closed-loop, rare-event simulation calibrated on the same data that quantifies the safety--time benefit, its dependence on the unevenness of pedestrian activity and on camera coverage, and two failure modes with mitigations (\S\ref{sec:sim}).
 \item A fleet-versus-infrastructure comparison on real traffic showing that fleet memory is limited by exposure rather than by quality (\S\ref{sec:fleet}).
+\item Evidence from a second, fully instrumented intersection that location memory and live signal phase add up, with the association between places and traffic lights learned from memory (\S\ref{sec:dlr}).
 \end{enumerate}
 All code, tests and results are in the accompanying repository and reproduce on a laptop in about twenty minutes.
 
@@ -387,6 +389,25 @@ Correcting for per-location exposure made no difference here because equipped ve
 This rush-hour block is the fleet's best case; the fleet is idealised (perfect detection within 50\,m, every sighting uploaded) and can only observe pedestrians the cameras also tracked, so the fleet numbers are upper bounds.
 
 % ============================================================================
+\section{Part 4: memory and live signals at an instrumented intersection}
+\label{sec:dlr}
+
+Part~1 left an open end: most of the error in predicting vehicles was longitudinal stop-and-go at signals, which a memory of the place cannot know.
+The DLR Urban Traffic dataset \citep{dlr_ut} closes it. Fourteen infrastructure multi-sensor systems around a signalised research intersection in Braunschweig recorded one full day (Sunday 24 September 2023, 00:00--24:00 UTC) at 20\,Hz, together with the states of all 30 traffic lights at 1\,Hz; after downsampling to 10\,Hz the day contains 28{,}378 vehicles, 3{,}153 cyclists and 765 pedestrians.
+We predict a vehicle's speed class 3\,s ahead (stopped, crawling, slow, moving) from four sources: area-wide statistics; the live phase of the governing light alone; location memory alone (per 4\,m cell and heading); and memory plus live phase. Which light governs a place is learned from memory as the light whose green state carries most mutual information about vehicles there being stopped 3\,s later; 244 of 1{,}035 places acquire a governing light (Figure~\ref{fig:dlr}a). Memory is built from even hours and tested on odd hours, so both cover day and night; intervals resample whole vehicles.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{dlr1_signal_memory.png}
+\caption{A full day at the DLR research intersection. (a) Places (blue) linked to the traffic light that memory learned governs them (black squares: signal heads). (b) Speed class 3\,s ahead predicted correctly by each source. (c) Error of the distance a moving vehicle near a light travels in 3\,s.}
+\label{fig:dlr}
+\end{figure}
+
+The two sources add up (Figure~\ref{fig:dlr}b,c). For moving vehicles near a governing light (63{,}750 test samples) the speed class is predicted correctly 44\pct{} of the time from area-wide statistics, 58\pct{} from the live phase alone, 63\pct{} from memory alone and 75\pct{} from both (information gain 0.27, 0.53 and 0.82 bits per sample); the error of the distance travelled in 3\,s falls from 4.82\,m under constant velocity to 4.22\,m with the live phase, 3.90\,m with memory and 2.71\,m with both ($-44\pct$). When the light is green, the live phase alone gains 0.73 bits and memory adds another 0.40.
+Conditioning memory additionally on day versus night does not help (0.27 versus 0.26 bits by day, 0.26 versus 0.25 at night): once the current speed and the light are known, the place behaves alike at any hour, and splitting the data only thins it.
+Vehicle--VRU conflicts remain rare even over a full day: 24 with TTC $\le 1.5$\,s (22 with cyclists), clustered at two crossing points; the 8 conflicts of even hours already locate 15 of the 16 of odd hours within the top 10\pct{} of road area, but samples this small only indicate that conflict hot spots are stable.
+
+% ============================================================================
 \section{Discussion}
 \label{sec:discussion}
 
@@ -402,7 +423,7 @@ Five rules follow from the experiments.
 Fixed cameras give memory in hours instead of days, independent of traffic volume, provide live perception beyond a vehicle's line of sight, and accumulate the exposure needed for rare events. Fleets cover places without cameras and can keep a camera's memory fresh; a hybrid memory with change detection is the natural next system.
 
 \paragraph{Limitations.}
-Part~1 uses two hours of one sunny weekday afternoon at one site; weather, lighting, day-of-week and cross-day transfer cannot yet be tested, and rare events are out of reach.
+Part~1 uses two hours of one sunny weekday afternoon at one site, and Part~4 one dry Sunday at another; weather, day-of-week and cross-day transfer cannot yet be tested, and rare events remain out of reach.
 The data contain road users only inside road polygons, and neither sidewalks nor buildings, so occlusion and infrastructure lead times are underestimated.
 The simulator is stylised: a one-dimensional longitudinal planner, 2-D line of sight, one pedestrian per episode, a synthetic parked row, pedestrians from the near side only and a free inattentive share; outside the attack experiments the camera never raises false alarms, which flatters live infrastructure, and the attacks themselves are simple: an adaptive attacker who knows the audit is not modelled.
 Memory learned from human behaviour is a prior, not a policy: that most drivers do something at a place does not make it safe.
@@ -417,7 +438,7 @@ The same experiments show how it fails and how to bound the damage: memory may o
 Autonomous driving need not be only a problem of a smarter car; part of the intelligence can live in the city, as long as the car treats it as a prior with an expiry date.
 
 \section*{Data and code availability}
-TGSIM Foggy Bottom is public (U.S.\ DOT, CC0) \citep{tgsim_fb}. The repository contains the full pipeline (data download, cleaning, memory, evaluation, simulator, fleet comparison), 39 unit tests and all results; Parts~1--3 reproduce in about twenty minutes on a laptop. [Repository URL to be added.]
+TGSIM Foggy Bottom is public (U.S.\ DOT, CC0) \citep{tgsim_fb}. DLR UT is public under CC BY-NC-SA 4.0 \citep{dlr_ut}. The repository contains the full pipeline (data download, cleaning, memory, evaluation, simulator, fleet comparison), 42 unit tests and all results; Parts~1--3 reproduce in about twenty minutes on a laptop. [Repository URL to be added.]
 
 \section*{Acknowledgements}
 [To be completed: supervisor, and a statement on the use of AI tools in line with HSE University regulations.]

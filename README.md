@@ -6,11 +6,12 @@ A robotaxi sees what is around it **now**. A fixed infrastructure camera watches
 days and months. This repository tests, on real data, whether that long-term *location memory* contains
 information a vehicle arriving for the first time does not have, and what it would cost to send it.
 
-Two questions, in order:
+Four questions, in order:
 
 1. **Does memory of a place predict what happens there later?** — on real infrastructure-camera data ([Part 1](#part-1--real-data-does-memory-predict)).
 2. **Does it help a robotaxi drive?** — closed-loop simulation calibrated on that data ([Part 2](#part-2--closed-loop-simulation-does-memory-help-a-robotaxi-drive)).
 3. **Why fixed cameras and not the fleet's own memory** (Mobileye REM, CHAMP)? — both, on the same real traffic ([Part 3](#part-3--fleet-memory-vs-infrastructure-memory)).
+4. **Do memory and live signal data add up?** — a full day at an instrumented intersection ([Part 4](#part-4--a-full-day-at-an-instrumented-intersection-dlr-ut)).
 
 **Paper (working draft):** [paper/main.pdf](paper/main.pdf) — build with `paper/build.sh` (pdflatex + bibtex).
 
@@ -20,6 +21,8 @@ Live infrastructure cameras are a far bigger lever (≈ 99% fewer), but only whi
 *silently* is the most dangerous state in the study, and a stale memory is worse than none unless it is only
 allowed to *add* caution — or a change detector notices the change, which a camera does within an hour. A fleet of cars can build the same memory, but it learns at the pace of equipped cars
 passing by: on this rush-hour block a 10% fleet needs ~4× the calendar time of a fixed camera, a 3% fleet ~16×.
+At a second, fully instrumented intersection, memory and the live traffic-light phase **add up**: together they
+cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m), more than either alone.
 
 # Part 1 — real data: does memory predict?
 
@@ -178,6 +181,38 @@ cars, measured on the real traffic of the block (184 driving vehicles per hour),
 live perception beyond the car's line of sight (Part 2: ≈ 99% fewer collisions, while it works); and exposure
 for rare events. The two are complementary: a fleet can keep a camera's memory fresh where there is no camera.
 
+# Part 4 — a full day at an instrumented intersection (DLR UT)
+
+[DLR Urban Traffic](https://doi.org/10.5281/zenodo.15754836) (CC BY-NC-SA 4.0): 14 infrastructure multi-sensor
+systems around the AIM research intersection in Braunschweig, **24 hours** (Sunday 24 Sep 2023), trajectories at
+20 Hz and the states of **all 30 traffic lights** at 1 Hz; 28,378 vehicles, 3,153 cyclists, 765 pedestrians.
+Memory from even hours, test on odd hours (both cover day and night); intervals resample whole vehicles.
+
+**E10 — memory + live signal phase.** Predict a vehicle's speed class 3 s ahead. Which light governs which place
+is itself learned from memory (mutual information between a light being green and vehicles there being stopped
+3 s later): 244 of 1,035 places get a governing light.
+
+| Moving vehicles near a light (63,750 test samples) | Speed class in 3 s correct | Info gain | Error of distance in 3 s |
+|---|---|---|---|
+| constant velocity | — | — | 4.82 m |
+| area-wide statistics | 44% | 0 | 5.26 m |
+| live signal phase only | 58% | 0.27 bits | 4.22 m |
+| location memory only | 63% | 0.53 bits | 3.90 m |
+| **memory + live phase** | **75%** | **0.82 bits** | **2.71 m (−44%)** |
+
+This closes Part 1's open end (longitudinal error from signals that memory cannot know) and supports H3 on real
+data: the two sources are complementary.
+
+**E11 — time of day.** Conditioning memory on day vs night **does not help** here (0.27 vs 0.26 bits by day, 0.26
+vs 0.25 at night): once current speed and the light are known, the place behaves alike at any hour.
+
+**E12 — conflicts over a full day.** Still rare: 24 vehicle–VRU conflicts (TTC ≤ 1.5 s; 22 with cyclists), at two
+crossing points; the 8 of even hours put 15 of the 16 of odd hours in the top 10% of area — stable hot spots, but a
+small sample.
+
+![Signal memory](results/figures/dlr1_signal_memory.png)
+![Conflicts](results/figures/dlr2_conflicts.png)
+
 # Details
 
 ## What the memory holds
@@ -236,6 +271,8 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 .venv/bin/python -m cityprior.fleet             # Part 3, ~8 min; writes results/fleet_metrics.json, figures/fleet*.png
 .venv/bin/python -m cityprior.sim.change        # E8, ~4 min; writes results/change_metrics.json, figures/sim4*.png
 .venv/bin/python -m cityprior.sim.spoof         # E9, ~40 s; writes results/spoof_metrics.json, figures/sim5*.png
+# Part 4: download and unzip DLR-Urban-Traffic-dataset_v1-3-0.zip (420 MB, Zenodo 15754836) into data/raw/dlr_ut/
+.venv/bin/python -m cityprior.dlr_experiments   # ~30 s the first time; writes results/dlr_metrics.json, figures/dlr*.png
 ```
 
 ## Layout
@@ -262,7 +299,10 @@ src/cityprior/
     figures.py
   fleet.py        fleet sightings (line of sight on real traffic), fleet memory, E7 (Part 3)
   fleet_figures.py
-tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks
+  dlr.py          DLR UT loader (10 Hz common schema), traffic lights, signal heads
+  dlr_experiments.py  E10-E12 (Part 4): memory + live signal phase, time of day, conflicts
+  dlr_figures.py
+tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association
 ```
 
 ## Next steps
@@ -271,4 +311,5 @@ tests/           geometry, TTC, braking detector, memory, simulator consistency,
    conditioning (fleet exposure collapses off-peak).
 2. **Adaptive attackers** who know the audit (dropping only a few pedestrians, only where cars cannot see),
    cross-checks between overlapping cameras, and detector errors measured on real video.
-3. Longer, multi-condition real data (V2X-Seq, inD, SinD) for weather / time-of-day conditioning and rare events.
+3. **Cross-day transfer** with repeated recordings of the same places (inD — access requested; pNEUMA for vehicles),
+   and weather conditioning (DLR UT's day was dry).
