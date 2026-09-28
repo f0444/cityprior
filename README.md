@@ -108,11 +108,15 @@ pedestrian walking at the planner's design speed, i.e. planner model and simulat
 | Camera fails silently vs with heartbeat | **3.83 / 10k** (1.8× worse than no infrastructure) vs **1.54** falling back to memory |
 | Keeping memory fresh (E8): the hotspot moves while observations keep arriving | a change detector (1 h windowed G-test) notices within **45 min** with a camera (0.3 false alarms / month); mean collisions over the next 24 h: **1.47** vs 2.47 never updated, 1.99 adding all observations, 1.65 forgetting (which costs **+8%** when nothing changes) |
 | …same with a fleet as the only observer | 10% fleet: median 1.25 h, 10% of changes unnoticed within a day; 3% fleet: only 19% noticed within a day |
+| Phantom pedestrians reported by the camera (E9: false reports or injected) | a car that trusts every report brakes hard 1.6 times per phantom, at ≥ 6 m/s² in 28% of cases (66% for phantoms timed to cross just before the car); **own sensors first** (the camera only fills blind spots) refutes 99%: 0.5% emergency braking, no measurable safety cost |
+| Camera silently drops real pedestrians, heartbeat healthy (E9) | trusted to say "clear": 1.04 / 2.01 / **3.83** collisions / 10k at 25 / 50 / 100% dropped; **"may only add caution"**: 0.43 / 0.82 / 1.54 (never worse than no camera), but 3 s slower per block when the camera is honest |
+| Fleet audit of a camera that drops pedestrians (E9) | cars report pedestrians they saw that the camera had not; at 10 passes / h a CUSUM revokes trust after a median **2.5 h** (all dropped) to 13 h (25% dropped), with ≤ 1 false revocation per year |
 
 ![Pareto](results/figures/sim1_pareto.png)
 ![Coverage, history, heterogeneity](results/figures/sim2_coverage_history.png)
 ![Robustness](results/figures/sim3_robustness.png)
 ![Change detection](results/figures/sim4_change_detection.png)
+![Spoofing](results/figures/sim5_spoofing.png)
 
 **Design rules that fall out of the experiments**
 
@@ -120,16 +124,19 @@ pedestrian walking at the planner's design speed, i.e. planner model and simulat
    needs fresh evidence. The cost is small: −21% instead of −26% collisions at equal time when the memory is right;
    the gain is large when it is wrong. A statistical change detector on live observations brings a stale memory
    back within about an hour, without the steady-state cost of simply forgetting old data.
-2. **Trust must expire.** Live "this area is clear" is the most valuable and the most dangerous message: every
-   message needs an age, and a missing heartbeat must revert the car to its prior.
-3. **Where to invest is predictable.** The benefit of memory tracks one number per place,
+2. **Trust must expire, and be audited.** Live "this area is clear" is the most valuable and the most dangerous
+   message: every message needs an age, a missing heartbeat must revert the car to its prior, and cars should
+   report pedestrians the camera missed so that a camera that silently drops people loses trust within hours.
+3. **Own sensors first.** Where the car can see for itself, camera reports are ignored; the camera only fills blind
+   spots. Phantom pedestrians then cannot trigger emergency braking in the car's view, at no measurable safety cost.
+4. **Where to invest is predictable.** The benefit of memory tracks one number per place,
    1 − (E√λ)²/Eλ (how uneven pedestrian activity is), measurable from a few hours of camera data.
 
 **Simulation limitations**: 1-D longitudinal planner and 2-D line of sight; one pedestrian per episode; synthetic
 parked row (TGSIM polygons cover the parking lane only partly); pedestrians from the near side only; the
 inattentive share is a free parameter, so **absolute collision rates are not calibrated to crash statistics —
-only comparisons between planners are meaningful**. The camera never raises false alarms (sidewalk walkers who
-do not cross are not simulated), which flatters live infrastructure; and with the camera up the simple planner
+only comparisons between planners are meaningful**. Outside E9 the camera never raises false alarms, which
+flatters live infrastructure (E9 prices them separately); and with the camera up the simple planner
 drives at the limit and brakes hard twice as often (101 vs 50 per 1,000 traversals) because attentive
 pedestrians accept 3 s gaps: comfort-aware planning with live data is future work.
 
@@ -228,6 +235,7 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 .venv/bin/python -m cityprior.sim.experiments   # Part 2, ~8 min; writes results/sim_metrics.json, figures/sim*.png
 .venv/bin/python -m cityprior.fleet             # Part 3, ~8 min; writes results/fleet_metrics.json, figures/fleet*.png
 .venv/bin/python -m cityprior.sim.change        # E8, ~4 min; writes results/change_metrics.json, figures/sim4*.png
+.venv/bin/python -m cityprior.sim.spoof         # E9, ~40 s; writes results/spoof_metrics.json, figures/sim5*.png
 ```
 
 ## Layout
@@ -250,15 +258,17 @@ src/cityprior/
     engine.py       vectorised closed-loop simulator, rare-event summary
     experiments.py  E1–E6 (Part 2)
     change.py       E8: keeping memory fresh (update strategies, sequential change detector)
+    spoof.py        E9: phantom and dropped pedestrians, onboard priority, fleet audit (CUSUM)
     figures.py
   fleet.py        fleet sightings (line of sight on real traffic), fleet memory, E7 (Part 3)
   fleet_figures.py
-tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection
+tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks
 ```
 
 ## Next steps
 
 1. **Hybrid memory**: camera memory kept fresh by fleet sightings where cameras are absent; time-of-day
    conditioning (fleet exposure collapses off-peak).
-2. **False alarms and spoofing** from the camera (sidewalk walkers, injected / deleted objects).
+2. **Adaptive attackers** who know the audit (dropping only a few pedestrians, only where cars cannot see),
+   cross-checks between overlapping cameras, and detector errors measured on real video.
 3. Longer, multi-condition real data (V2X-Seq, inD, SinD) for weather / time-of-day conditioning and rare events.

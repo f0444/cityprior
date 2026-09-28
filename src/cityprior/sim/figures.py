@@ -297,3 +297,64 @@ def fig_change(path: Path, res: dict):
     fig.tight_layout()
     fig.savefig(path, dpi=130)
     plt.close(fig)
+
+
+def fig_spoof(path: Path, res: dict):
+    fig, axs = plt.subplots(1, 3, figsize=(19, 5.2))
+
+    ax = axs[0]
+    for name, color, label in (("naive", RED, "trusts every report"), ("onboard priority", BLUE,
+                                                                        "own sensors first, camera fills blind spots")):
+        rows = res["phantoms"][name]["per_traversal"]
+        g = [r["ghosts_per_hour"] for r in rows]
+        ax.plot(g, [r["hard_brakes_per_1k"] for r in rows], color=color, lw=2, marker="o", ms=5, label=label)
+        ax.annotate(f"{rows[-1]['trip_time']:.1f} s", (g[-1], rows[-1]["hard_brakes_per_1k"]), xytext=(-8, 8),
+                    textcoords="offset points", ha="right", fontsize=9, color=INK)
+    ax.set_xlabel("false pedestrian reports per hour on the block")
+    ax.set_ylabel("hard brakes per 1,000 traversals")
+    ax.set_ylim(bottom=0)
+    ax.set_title("a  Phantom pedestrians: comfort cost (label: trip time)")
+    ax.legend(loc="upper left", fontsize=8.5)
+    ax.grid(True, color=GRID, lw=0.6)
+
+    ax = axs[1]
+    d = res["deletion"]
+    shares = [100 * s for s in d["shares"]]
+    for key, color, label in (("camera trusted", RED, "camera trusted to say 'clear'"),
+                              ("camera may only add caution", BLUE, "camera may only add caution")):
+        ys = [r["collisions_per_10k"] for r in d[key]]
+        ax.plot(shares, ys, color=color, lw=2, marker="o", ms=5, label=label)
+        ax.annotate(f"{d[key][-1]['trip_time']:.1f} s", (shares[-1], ys[-1]), xytext=(-8, 6),
+                    textcoords="offset points", ha="right", fontsize=9, color=INK)
+    mem = res["honest"]["no camera (memory only)"]["collisions_per_10k"]
+    ax.axhline(mem, color=GRAY, lw=1.5, ls="--")
+    ax.text(2, mem, "no camera (memory only)", va="bottom", fontsize=9, color=INK2)
+    ax.set_xlabel("real pedestrians the camera silently drops (%)")
+    ax.set_ylabel("collisions per 10,000 traversals")
+    ax.set_ylim(bottom=0)
+    ax.set_title("b  Deleted pedestrians, healthy heartbeat (label: trip time)")
+    ax.legend(loc="upper left", fontsize=8.5)
+    ax.grid(True, color=GRID, lw=0.6)
+
+    ax = axs[2]
+    shades = {1.0: "#184f95", 0.5: "#3987e5", 0.25: "#86b6ef", 0.75: "#256abf"}
+    rows = res["audit"]["rows"]
+    for share in (1.0, 0.5, 0.25):
+        rr = [r for r in rows if r["delete_share"] == share]
+        ax.plot([r["passes_per_hour"] for r in rr], [r["median_hours"] for r in rr], color=shades[share], lw=2,
+                marker="o", ms=5, label=f"{100 * share:.0f}% of pedestrians dropped")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ticks = sorted({r["passes_per_hour"] for r in rows})
+    ax.set_xticks(ticks, [str(t) for t in ticks])
+    ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+    ax.set_yticks([0.5, 1, 2, 5, 10, 20, 50], ["0.5", "1", "2", "5", "10", "20", "50"])
+    ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+    ax.set_xlabel("robotaxi passes through the block per hour")
+    ax.set_ylabel("hours until the fleet revokes trust (median)")
+    ax.set_title("c  Fleet audit (≤ 1 false revocation per year)")
+    ax.legend(loc="upper right", fontsize=8.5)
+    ax.grid(True, color=GRID, lw=0.6, which="both")
+    fig.tight_layout()
+    fig.savefig(path, dpi=130)
+    plt.close(fig)

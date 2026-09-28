@@ -19,6 +19,7 @@ from .world import Profile, SimParams, sample_parked_row, snap_to_gap
 TAU_RANGE = (-9.0, 2.0)            # curb-crossing time relative to the robotaxi's nominal arrival
 WINDOW = TAU_RANGE[1] - TAU_RANGE[0]
 NEAR_MISS_DRAC = 4.0               # m/s^2
+T_REFUTE = 0.4                     # s of own clear view without a detection that refutes a camera report
 
 
 @dataclass
@@ -47,6 +48,12 @@ def sample_encounters(rng: np.random.Generator, n: int, p: SimParams, speed_quan
 class Infra:
     coverage: np.ndarray | None = None     # on p.grid, 0/1
     up: bool = False                       # camera actually working
+    # --- faults and attacks (defaults: an honest camera)
+    delete_share: float = 0.0              # share of real pedestrians the camera never reports
+    ghost: bool = False                    # the episode's pedestrian exists only in camera reports
+    report_from_y: float | None = None     # reports start only once the object is this far out (pop-up)
+    # --- defence
+    onboard_priority: bool = False         # where the car sees for itself, camera reports are ignored
 
 
 def nominal_run(profile: np.ndarray, p: SimParams, t_max: float = 400.0):
@@ -97,6 +104,12 @@ def simulate(enc: Encounters, truth: Profile, profile: np.ndarray, p: SimParams,
     hist_y = np.repeat(y[None], k_lat + 1, axis=0)
     hist_vy = np.zeros((k_lat + 1, n))
     p_frame = 1 - (1 - p.infra_p_detect) ** (p.dt / 0.1)
+    # separate generator so that honest-camera runs keep their exact random stream
+    deleted = np.random.default_rng(enc.seed + 1).random(n) < infra.delete_share
+    ghost = bool(infra.ghost)
+    refute_timer = np.zeros(n)
+    refuted = np.zeros(n, bool)
+    unreported_seen = np.zeros(n, bool)
 
     collided = np.zeros(n, bool)
     near = np.zeros(n, bool)
@@ -144,7 +157,8 @@ def simulate(enc: Encounters, truth: Profile, profile: np.ndarray, p: SimParams,
         xa, xb = sx + s_in * (x_p - sx), sx + s_out * (x_p - sx)
         seg_lo, seg_hi = np.minimum(xa, xb), np.maximum(xa, xb)
         blocked = below & ((enc.x0 < seg_hi[:, None]) & (enc.x1 > seg_lo[:, None])).any(axis=1)
-        vis = present & ~blocked & (np.abs(x_p - sx) < p.sensor_range)
+        geo_vis = present & ~blocked & (np.abs(x_p - sx) < p.sensor_range)
+        vis = geo_vis & (not ghost)
         vis_timer = np.where(vis, vis_timer + p.dt, 0.0)
         new_ob = ~known_ob & (vis_timer >= p.t_perception - 1e-9)
         known_ob |= vis_timer >= p.t_perception - 1e-9
@@ -153,9 +167,19 @@ def simulate(enc: Encounters, truth: Profile, profile: np.ndarray, p: SimParams,
         hist_y[k % (k_lat + 1)] = y
         hist_vy[k % (k_lat + 1)] = vy
         if infra.up:
-            detect = present & covered & (rng.random(n) < p_frame)
+            reportable = present & covered & ~deleted
+            if infra.report_from_y is not None:
+                reportable &= y >= infra.report_from_y
+            detect = reportable & (rng.random(n) < p_frame)
             first_det = np.where(detect & np.isinf(first_det), t, first_det)
         infra_known = t >= first_det + p.infra_latency
+        # evidence for a fleet audit: the car saw someone the covering camera had not reported
+        # (only pedestrians who appeared during the episode: the camera saw them from the start)
+        unreported_seen |= new_ob & covered & infra.up & ~infra_known & (t_spawn > 0)
+        if infra.onboard_priority:
+            refute_timer = np.where(geo_vis & infra_known & ~known_ob, refute_timer + p.dt, 0.0)
+            refuted |= refute_timer >= T_REFUTE - 1e-9
+            infra_known = infra_known & ~refuted & ~(geo_vis & ~known_ob)
         slot = (k - k_lat) % (k_lat + 1)
         y_inf = hist_y[slot] + hist_vy[slot] * p.infra_latency
         vy_inf = hist_vy[slot]
@@ -197,20 +221,22 @@ def simulate(enc: Encounters, truth: Profile, profile: np.ndarray, p: SimParams,
         # ---- outcomes
         dxc = np.clip(x_p, xf - p.av_length, xf) - x_p
         dyc = np.clip(y, lo, hi) - y
-        touch = running & present & (np.hypot(dxc, dyc) < r) & (v > 0.3)
+        touch = running & present & (not ghost) & (np.hypot(dxc, dyc) < r) & (v > 0.3)
         impact_v = np.where(touch & ~collided, v, impact_v)
         collided |= touch
         # near miss: deceleration required to avoid the pedestrian (DRAC) >= 4 m/s^2
         in_path = (y + r > lo) & (y - r < hi)
         with np.errstate(divide="ignore"):
             drac = np.where(gap > 0.05, v ** 2 / (2 * gap), np.inf)
-        near |= touch | (running & present & in_path & (gap > 0.05) & (drac >= NEAR_MISS_DRAC) & (v > 0.5))
+        near |= touch | (running & present & (not ghost) & in_path & (gap > 0.05) & (drac >= NEAR_MISS_DRAC)
+                         & (v > 0.5))
         t_finish = np.where(running & ~collided & (xf - p.av_length > p.x_end), t, t_finish)
 
     return {
         "collided": collided, "impact_v": impact_v, "near": near, "hard_brakes": hard,
         "max_decel": max_decel, "t_finish": t_finish, "t_nominal": np.full(n, t_nom),
         "known_by_infra_first": first_known_by_infra, "x_p": x_p,
+        "unreported_seen": unreported_seen, "refuted": refuted, "deleted": deleted,
     }
 
 

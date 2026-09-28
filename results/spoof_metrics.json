@@ -1,0 +1,396 @@
+{
+ "operating_v_ref": 8.0,
+ "honest": {
+  "camera trusted": {
+   "collisions_per_10k": 0.005076486503758973,
+   "trip_time": 14.537604823312458,
+   "hard_brakes_per_1k": 101.45358277762307,
+   "near_misses_per_10k": 225.33508292885327
+  },
+  "camera trusted + onboard priority": {
+   "collisions_per_10k": 0.010152973007517946,
+   "trip_time": 14.531518657662815,
+   "hard_brakes_per_1k": 97.88836630603313,
+   "near_misses_per_10k": 212.66924910197463
+  },
+  "camera may only add caution": {
+   "collisions_per_10k": 0.005076486503758973,
+   "trip_time": 17.547734652692668,
+   "hard_brakes_per_1k": 76.82856204518905,
+   "near_misses_per_10k": 106.16963873961514
+  },
+  "no camera (memory only)": {
+   "collisions_per_10k": 1.5381754106389687,
+   "trip_time": 17.472572347286587,
+   "hard_brakes_per_1k": 49.65616038516877,
+   "near_misses_per_10k": 56.81603695007042
+  }
+ },
+ "deletion": {
+  "shares": [
+   0.0,
+   0.25,
+   0.5,
+   0.75,
+   1.0
+  ],
+  "camera trusted": [
+   {
+    "collisions_per_10k": 0.005076486503758973,
+    "trip_time": 14.537604823312458,
+    "hard_brakes_per_1k": 101.45358277762307,
+    "near_misses_per_10k": 225.33508292885327
+   },
+   {
+    "collisions_per_10k": 1.0406797332705895,
+    "trip_time": 14.522026508791788,
+    "hard_brakes_per_1k": 87.65416951445506,
+    "near_misses_per_10k": 194.5411157970513
+   },
+   {
+    "collisions_per_10k": 2.005212168984794,
+    "trip_time": 14.503568962798871,
+    "hard_brakes_per_1k": 73.11765041094124,
+    "near_misses_per_10k": 162.72677487799388
+   },
+   {
+    "collisions_per_10k": 2.868214874623819,
+    "trip_time": 14.486360309230982,
+    "hard_brakes_per_1k": 64.2302454888104,
+    "near_misses_per_10k": 138.99420047292065
+   },
+   {
+    "collisions_per_10k": 3.827670823834265,
+    "trip_time": 14.470106065547096,
+    "hard_brakes_per_1k": 50.266861711570975,
+    "near_misses_per_10k": 108.20530982762249
+   }
+  ],
+  "camera may only add caution": [
+   {
+    "collisions_per_10k": 0.005076486503758973,
+    "trip_time": 17.547734652692668,
+    "hard_brakes_per_1k": 76.82856204518905,
+    "near_misses_per_10k": 106.16963873961514
+   },
+   {
+    "collisions_per_10k": 0.4264248663157537,
+    "trip_time": 17.53029066872274,
+    "hard_brakes_per_1k": 70.23268313085501,
+    "near_misses_per_10k": 89.43246273672182
+   },
+   {
+    "collisions_per_10k": 0.8173143271051945,
+    "trip_time": 17.509738869181486,
+    "hard_brakes_per_1k": 60.666044314521216,
+    "near_misses_per_10k": 77.60424918296341
+   },
+   {
+    "collisions_per_10k": 1.1320564903382508,
+    "trip_time": 17.491350313303975,
+    "hard_brakes_per_1k": 56.405349191916315,
+    "near_misses_per_10k": 70.31949105006927
+   },
+   {
+    "collisions_per_10k": 1.5381754106389687,
+    "trip_time": 17.472572347286587,
+    "hard_brakes_per_1k": 49.65616038516877,
+    "near_misses_per_10k": 56.81603695007042
+   }
+  ],
+  "evidence_per_traversal": [
+   0.002207763980484777,
+   0.028880639368535167,
+   0.05508444740363823,
+   0.08193753806257205,
+   0.10747124987917894
+  ]
+ },
+ "phantoms": {
+  "naive": {
+   "benign_ghost": {
+    "mean_delay_s": 0.8906583333332639,
+    "hard_brakes_per_phantom": 1.6088666666666667,
+    "share_emergency_braking": 0.27773333333333333,
+    "mean_max_decel": 3.226857960989238,
+    "share_refuted": 0.0
+   },
+   "targeted_from_sidewalk": {
+    "mean_delay_s": 2.2888966666665973,
+    "hard_brakes_per_phantom": 3.3905666666666665,
+    "share_emergency_braking": 0.6586,
+    "mean_max_decel": 5.2022514786364304,
+    "share_refuted": 0.0
+   },
+   "targeted_popup": {
+    "mean_delay_s": 0.43033499999993063,
+    "hard_brakes_per_phantom": 0.6858333333333333,
+    "share_emergency_braking": 0.35733333333333334,
+    "mean_max_decel": 3.577773752982519,
+    "share_refuted": 0.0
+   },
+   "per_traversal": [
+    {
+     "ghosts_per_hour": 0,
+     "trip_time": 14.537604823312458,
+     "hard_brakes_per_1k": 101.45358277762307
+    },
+    {
+     "ghosts_per_hour": 25,
+     "trip_time": 14.605641223775416,
+     "hard_brakes_per_1k": 224.3531198146601
+    },
+    {
+     "ghosts_per_hour": 50,
+     "trip_time": 14.673677624238373,
+     "hard_brakes_per_1k": 347.2526568516971
+    },
+    {
+     "ghosts_per_hour": 100,
+     "trip_time": 14.809750425164289,
+     "hard_brakes_per_1k": 593.0517309257712
+    },
+    {
+     "ghosts_per_hour": 200,
+     "trip_time": 15.08189602701612,
+     "hard_brakes_per_1k": 1084.6498790739192
+    }
+   ]
+  },
+  "onboard priority": {
+   "benign_ghost": {
+    "mean_delay_s": 0.31084333333326386,
+    "hard_brakes_per_phantom": 0.029033333333333335,
+    "share_emergency_braking": 0.005266666666666667,
+    "mean_max_decel": 1.7803717015618092,
+    "share_refuted": 0.9921666666666666
+   },
+   "targeted_from_sidewalk": {
+    "mean_delay_s": 0.7258983333332639,
+    "hard_brakes_per_phantom": 0.1177,
+    "share_emergency_braking": 0.018966666666666666,
+    "mean_max_decel": 2.1534550626100595,
+    "share_refuted": 0.9934666666666667
+   },
+   "targeted_popup": {
+    "mean_delay_s": -6.927791673660977e-14,
+    "hard_brakes_per_phantom": 0.0,
+    "share_emergency_braking": 0.0,
+    "mean_max_decel": 1.6679897109807484,
+    "share_refuted": 0.991
+   },
+   "per_traversal": [
+    {
+     "ghosts_per_hour": 0,
+     "trip_time": 14.531518657662815,
+     "hard_brakes_per_1k": 97.88836630603313
+    },
+    {
+     "ghosts_per_hour": 25,
+     "trip_time": 14.555263634514661,
+     "hard_brakes_per_1k": 100.10619038010721
+    },
+    {
+     "ghosts_per_hour": 50,
+     "trip_time": 14.579008611366508,
+     "hard_brakes_per_1k": 102.32401445418128
+    },
+    {
+     "ghosts_per_hour": 100,
+     "trip_time": 14.626498565070202,
+     "hard_brakes_per_1k": 106.75966260232943
+    },
+    {
+     "ghosts_per_hour": 200,
+     "trip_time": 14.721478472477587,
+     "hard_brakes_per_1k": 115.63095889862572
+    }
+   ]
+  }
+ },
+ "audit": {
+  "p0": 0.002207763980484777,
+  "rows": [
+   {
+    "delete_share": 0.25,
+    "passes_per_hour": 2,
+    "threshold": 5.952363090772693,
+    "median_traversals": 102.0,
+    "median_hours": 51.0,
+    "p90_hours": 122.04999999999995,
+    "expected_extra_collisions": 0.01299063301752429
+   },
+   {
+    "delete_share": 0.25,
+    "passes_per_hour": 5,
+    "threshold": 6.8512128032008,
+    "median_traversals": 119.0,
+    "median_hours": 23.8,
+    "p90_hours": 54.81999999999998,
+    "expected_extra_collisions": 0.014628931463828246
+   },
+   {
+    "delete_share": 0.25,
+    "passes_per_hour": 10,
+    "threshold": 7.542635658914729,
+    "median_traversals": 133.0,
+    "median_hours": 13.3,
+    "p90_hours": 29.1,
+    "expected_extra_collisions": 0.016485457404307145
+   },
+   {
+    "delete_share": 0.25,
+    "passes_per_hour": 20,
+    "threshold": 8.234058514628657,
+    "median_traversals": 150.0,
+    "median_hours": 7.5,
+    "p90_hours": 15.95,
+    "expected_extra_collisions": 0.01791956078042985
+   },
+   {
+    "delete_share": 0.25,
+    "passes_per_hour": 50,
+    "threshold": 9.152663165791449,
+    "median_traversals": 165.0,
+    "median_hours": 3.3,
+    "p90_hours": 6.94,
+    "expected_extra_collisions": 0.01995555676357344
+   },
+   {
+    "delete_share": 0.5,
+    "passes_per_hour": 2,
+    "threshold": 6.732683170792698,
+    "median_traversals": 47.0,
+    "median_hours": 23.5,
+    "p90_hours": 54.5,
+    "expected_extra_collisions": 0.011508980730564123
+   },
+   {
+    "delete_share": 0.5,
+    "passes_per_hour": 5,
+    "threshold": 7.641410352588147,
+    "median_traversals": 53.0,
+    "median_hours": 10.6,
+    "p90_hours": 24.8,
+    "expected_extra_collisions": 0.012960679208908862
+   },
+   {
+    "delete_share": 0.5,
+    "passes_per_hour": 10,
+    "threshold": 8.332833208302077,
+    "median_traversals": 58.0,
+    "median_hours": 5.8,
+    "p90_hours": 12.3,
+    "expected_extra_collisions": 0.01317589380834382
+   },
+   {
+    "delete_share": 0.5,
+    "passes_per_hour": 20,
+    "threshold": 9.024256064016004,
+    "median_traversals": 65.0,
+    "median_hours": 3.25,
+    "p90_hours": 6.8,
+    "expected_extra_collisions": 0.014992417035173095
+   },
+   {
+    "delete_share": 0.5,
+    "passes_per_hour": 50,
+    "threshold": 9.942860715178794,
+    "median_traversals": 71.0,
+    "median_hours": 1.42,
+    "p90_hours": 2.94,
+    "expected_extra_collisions": 0.016448865835763722
+   },
+   {
+    "delete_share": 0.75,
+    "passes_per_hour": 2,
+    "threshold": 7.196924231057764,
+    "median_traversals": 32.5,
+    "median_hours": 16.25,
+    "p90_hours": 34.5,
+    "expected_extra_collisions": 0.010660681052785937
+   },
+   {
+    "delete_share": 0.75,
+    "passes_per_hour": 5,
+    "threshold": 8.105651412853213,
+    "median_traversals": 33.0,
+    "median_hours": 6.6,
+    "p90_hours": 14.8,
+    "expected_extra_collisions": 0.01124841178540728
+   },
+   {
+    "delete_share": 0.75,
+    "passes_per_hour": 10,
+    "threshold": 8.797074268567142,
+    "median_traversals": 34.0,
+    "median_hours": 3.4,
+    "p90_hours": 7.6,
+    "expected_extra_collisions": 0.01193212923249035
+   },
+   {
+    "delete_share": 0.75,
+    "passes_per_hour": 20,
+    "threshold": 9.48849712428107,
+    "median_traversals": 40.0,
+    "median_hours": 2.0,
+    "p90_hours": 4.25,
+    "expected_extra_collisions": 0.012899798429215228
+   },
+   {
+    "delete_share": 0.75,
+    "passes_per_hour": 50,
+    "threshold": 10.407101775443861,
+    "median_traversals": 44.0,
+    "median_hours": 0.88,
+    "p90_hours": 1.78,
+    "expected_extra_collisions": 0.014378967298977753
+   },
+   {
+    "delete_share": 1.0,
+    "passes_per_hour": 2,
+    "threshold": 7.503125781445362,
+    "median_traversals": 23.0,
+    "median_hours": 11.5,
+    "p90_hours": 24.0,
+    "expected_extra_collisions": 0.009857228452815744
+   },
+   {
+    "delete_share": 1.0,
+    "passes_per_hour": 5,
+    "threshold": 8.421730432608152,
+    "median_traversals": 25.0,
+    "median_hours": 5.0,
+    "p90_hours": 10.8,
+    "expected_extra_collisions": 0.011112663998053517
+   },
+   {
+    "delete_share": 1.0,
+    "passes_per_hour": 10,
+    "threshold": 9.113153288322081,
+    "median_traversals": 25.0,
+    "median_hours": 2.5,
+    "p90_hours": 5.709999999999991,
+    "expected_extra_collisions": 0.011708702020101774
+   },
+   {
+    "delete_share": 1.0,
+    "passes_per_hour": 20,
+    "threshold": 9.804576144036009,
+    "median_traversals": 27.0,
+    "median_hours": 1.35,
+    "p90_hours": 2.95,
+    "expected_extra_collisions": 0.012420277955995849
+   },
+   {
+    "delete_share": 1.0,
+    "passes_per_hour": 50,
+    "threshold": 10.7231807951988,
+    "median_traversals": 32.0,
+    "median_hours": 0.64,
+    "p90_hours": 1.3,
+    "expected_extra_collisions": 0.01363528956611635
+   }
+  ]
+ }
+}
