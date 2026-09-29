@@ -33,7 +33,7 @@ Location Memory from Infrastructure Cameras as a Prior for Autonomous Driving}
 \begin{abstract}
 A robotaxi perceives a place only while it is there; a fixed camera watches the same place for hours, days and months.
 We ask whether this long-term \emph{location memory} is worth anything to an autonomous vehicle, and when it becomes a liability.
-Memory is represented as exposure-normalised sufficient statistics with uncertainty---where pedestrians step onto the road, how traffic turns, where vehicles brake hard---and is evaluated in five steps.
+Memory is represented as exposure-normalised sufficient statistics with uncertainty---where pedestrians step onto the road, how traffic turns, where vehicles brake hard---and is evaluated in six steps.
 (i)~On two hours of real trajectories from 12 fixed 4K infrastructure cameras in Washington, DC (TGSIM Foggy Bottom), memory built from the first 79 minutes predicts the last 40:
 73\pct{} of held-out pedestrian road entries fall inside the 10\pct{} of road area it ranks highest (2.27 bits per entry over a uniform prior), and for vehicles that change direction it picks their heading 3\,s ahead correctly 59\pct{} of the time, against 19\pct{} for area-wide statistics.
 (ii)~In a closed-loop occlusion simulation calibrated on the same data, an occlusion-aware planner with 10 hours of memory has 26\pct{} fewer pedestrian collisions at equal trip time (95\pct{} CI 20--33\pct) than a planner that knows only the street's average pedestrian rate, matching perfect knowledge; the benefit grows with the spatial unevenness of pedestrian activity, from 0 to 56\pct.
@@ -41,6 +41,7 @@ Two failure modes are severe: stale memory is worse than none, and a live camera
 (iii)~Treating every real vehicle in the data as a potential fleet car shows that a fleet can learn the same memory, but at the pace of equipped cars passing by: at 10\pct{} penetration it needs roughly four times the calendar time of a fixed camera.
 (iv)~A full day at an instrumented intersection in Braunschweig (DLR UT) shows that location memory and the live phase of the traffic lights are complementary: together they cut the error of where a vehicle approaching a light will be in 3\,s from 4.8\,m (constant velocity) to 2.7\,m, against 3.9 and 4.2\,m for memory or live phase alone; which light governs which place is itself learned from memory.
 (v)~Over four weekday mornings in Athens (pNEUMA, 74{,}405 vehicles), memory built on other mornings is 94--98\pct{} as informative as memory of the same morning at equal volume, and more mornings make it better: location memory transfers across days.
+(vi)~A cost-benefit model per block face, with published unit values, shows where this pays: a trusted live camera on a block breaks even at about 3{,}750 robotaxi traversals a day (90\pct{} interval 2{,}340--7{,}450), almost entirely through riders' and vehicles' time rather than avoided crashes, whereas cameras installed for memory alone do not pay where fleets learn their own.
 \end{abstract}
 
 % ============================================================================
@@ -68,6 +69,7 @@ The questions are therefore empirical: does memory predict what happens later, d
 \item A fleet-versus-infrastructure comparison on real traffic showing that fleet memory is limited by exposure rather than by quality (\S\ref{sec:fleet}).
 \item Evidence from a second, fully instrumented intersection that location memory and live signal phase add up, with the association between places and traffic lights learned from memory (\S\ref{sec:dlr}).
 \item Evidence from four weekday mornings in Athens that location memory transfers across days (\S\ref{sec:pneuma}).
+\item A cost-benefit model per block face that combines the simulated effects with published unit values and shows which infrastructure pays off at which robotaxi volume (\S\ref{sec:econ}).
 \end{enumerate}
 All code, tests and results are in the accompanying repository and reproduce on a laptop in about twenty minutes.
 
@@ -427,6 +429,57 @@ Memory transfers across days. For the heading of moving vehicles, area-wide stat
 Without the signal phase, however, memory predicts speed in dense Athens traffic only weakly (the 3\,s distance error falls from 1.98 to 1.89\,m), which is consistent with Part~4: speed needs memory \emph{and} live signal data. Cross-day transfer for pedestrians remains to be tested.
 
 % ============================================================================
+\section{Part 6: where does infrastructure pay off?}
+\label{sec:econ}
+
+The previous parts measure benefits in bits, collisions and seconds. A city deciding where to put cameras needs them in money, against costs.
+The unit of analysis is one block face like the simulated street: 90\,m of kerb with parked cars. The baseline is what a fleet can do alone: robotaxis already use a fleet-learned memory (Part~3), fresh wherever they pass often enough. Against it we value four options: location memory from \emph{existing} city cameras (software only); \emph{new} cameras for memory; a \emph{live} camera with a roadside unit whose ``clear'' the vehicle trusts, protected by the heartbeat, onboard priority and fleet audit of E9; and the same hardware used so that the vehicle is \emph{never worse} than without it, i.e.\ at its old speed, with the benefit taken as safety only.
+
+\paragraph{What one traversal gains (E14).}
+For each concentration of pedestrian activity of E6, the simulator compares the risk--time curve of each source with the no-memory planner at the operating point: seconds saved at equal risk and collision reduction at equal time. On this street memory saves 1.2\,s per traversal (0.2--1.7\,s from a uniform to a strongly concentrated street); a trusted live camera saves about 3.45\,s at any unevenness, because the speed limit binds. A camera whose reports may only add caution saves 1.2--3.4\,s only if the operator raises its overall speed, which gives up the guarantee of never being worse than without the camera.
+
+\paragraph{Valuation.}
+Seconds are valued at the USDOT value of travel time, \$21.10 per person-hour \citep{usdot_bca2025}, times 0.7 riders per traversal, plus \$10 per vehicle-hour for the operator, and only on the half of traversals where pedestrian risk, not traffic ahead or a signal, limits the vehicle's speed: \$0.0034 per second saved. Avoided crashes are valued with the USDOT crash costs (\$13.2\,M per fatality, \$229{,}800 per injury of unknown severity; 3\pct{} fatal, against 9.7\pct{} of injured or killed pedestrians nationally \citep{nhtsa_ped2023}) at the robotaxi pedestrian-injury crash rate of 7 in 271.3\,M rider-only miles \citep{waymo_hub}, times three for a busy block and 0.3 for the share of crashes of the occluded step-out type. Costs are two cameras at the median furnished-and-installed price of \$6{,}220 \citep{itsjpo_costs}, \$10{,}000 of site works, a roadside unit at \$11{,}000 \citep{itsa_v2x2023} and \$5{,}000 of edge computing for the live options, 10\pct{} of capital a year for maintenance and \$600 per camera-year for analytics; the camera memory beyond fleet memory follows from the staleness after a change (E8: about 0.8\,h for a camera or a fleet passing 18 times an hour, 14\,h at 5.5 passes per hour) at four changes a year. Benefits and costs are discounted at 7\pct{} over ten years. Parameters without a published source are assumptions with stated ranges; a Monte Carlo draws all of them from triangular distributions.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{econ1_value.png}
+\caption{Cost-benefit per block face. (a) Seconds saved per traversal at equal risk and their value, by unevenness of pedestrian activity. (b) Net present value over ten years by option at this street's unevenness, with break-even volumes. (c) Annual value of memory if fleets had none, the value camera memory adds to fleet memory with one or three fleets that do not share data, and the running cost of analytics on existing cameras.}
+\label{fig:econ}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Cost-benefit per block face at this street's unevenness (2023 dollars, 7\pct, 10 years).}
+\label{tab:econ}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Option & Value & Cost & Break-even \\
+ & & & (traversals/day) \\
+\midrule
+Live camera, trusted & 2.23\,s (0.77\,\textcent) per traversal & \$38{,}440 + \$5{,}044/yr & 3{,}750 \\
+Live camera, never worse & 0.06\,\textcent{} per traversal (safety) & same & $\approx$\,50{,}000 \\
+Memory from existing CCTV & $\le$\,\$6.5/yr beyond fleet memory & \$1{,}770/yr & never \\
+New cameras, memory only & same & \$22{,}440 + \$3{,}444/yr & never \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Results.}
+Live perception is what cameras sell, and it pays at high robotaxi volume (Table~\ref{tab:econ}, Figure~\ref{fig:econ}): a trusted live camera breaks even at 3{,}750 traversals a day (90\pct{} interval 2{,}340--7{,}450 over parameter uncertainty; 3{,}410 at a 3.1\pct{} discount rate), about a third of a street carrying 10{,}000 vehicles a day. The probability of a positive net present value is 19\pct{} at 3{,}000 traversals a day and 98\pct{} at 10{,}000. The break-even hardly depends on the unevenness of pedestrian activity, since the live camera's gain is capped by the speed limit; it is moved most by the share of traversals where traffic ahead does not bind, the value of a vehicle-hour and the cost of the roadside unit (Figure~\ref{fig:econ_decision}).
+The benefit is time, not avoided crashes: robotaxis already hit pedestrians rarely, so memory taken as safety is worth 0.023\,\textcent{} per traversal against 0.41\,\textcent{} taken as time; at the human benchmark crash rate the two would be comparable. The cheapest guarantee, never being worse than without the camera, therefore costs almost the whole business case, which is the economic argument for the trust machinery of E9.
+Memory is worth having but not worth buying cameras for: once a fleet passes about 18 times an hour it recovers from a change as fast as a camera, so camera memory adds at most a few dollars a year per site to fleet memory, even with three fleets that do not share data. Existing cameras would pay for memory alone only for an operator without its own memory (from about 1{,}170 traversals a day).
+A per-traversal fee that covers a live camera is 0.96\,\textcent{} at 3{,}000 traversals a day and 0.29\,\textcent{} at 10{,}000, against a value of 0.77\,\textcent{} to the operator: on busy corridors a city could sell the live feed.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{econ2_decision.png}
+\caption{(a) Option with the highest net present value per block face, by robotaxi volume and unevenness of pedestrian activity (base values; line: break-even of the trusted live camera). (b) Break-even volume of the trusted live camera when one parameter at a time is set to the low or high end of its range.}
+\label{fig:econ_decision}
+\end{figure}
+
+% ============================================================================
 \section{Discussion}
 \label{sec:discussion}
 
@@ -439,7 +492,7 @@ Five rules follow from the experiments.
 (5)~\emph{Invest where places are uneven}: the benefit of memory tracks a heterogeneity index measurable from hours of camera data.
 
 \paragraph{Cameras and fleets are complementary.}
-Fixed cameras give memory in hours instead of days, independent of traffic volume, provide live perception beyond a vehicle's line of sight, and accumulate the exposure needed for rare events. Fleets cover places without cameras and can keep a camera's memory fresh; a hybrid memory with change detection is the natural next system.
+Fixed cameras give memory in hours instead of days, independent of traffic volume, provide live perception beyond a vehicle's line of sight, and accumulate the exposure needed for rare events. Fleets cover places without cameras and can keep a camera's memory fresh; a hybrid memory with change detection is the natural next system. In money the division of labour is sharper (\S\ref{sec:econ}): where robotaxis are frequent, fleets supply memory at no extra cost and cameras pay for themselves through live perception; where they are rare, neither pays per block yet.
 
 \paragraph{Limitations.}
 Part~1 uses two hours of one sunny weekday afternoon at one site, and Part~4 one dry Sunday at another; Part~5 tests cross-day transfer for vehicles only, weather is not yet tested, and rare events remain out of reach.
@@ -448,16 +501,17 @@ The simulator is stylised: a one-dimensional longitudinal planner, 2-D line of s
 Memory learned from human behaviour is a prior, not a policy: that most drivers do something at a place does not make it safe.
 
 \paragraph{Next steps.}
-Repeated recordings of the same intersections on different days \citep{bock2020ind} and long-term roadside data \citep{yu2023v2xseq} will test cross-day transfer, time-of-day conditioning and rare-event statistics; detecting changes on real rather than simulated shifts, adaptive attackers and cross-checks between overlapping cameras, and a hybrid camera--fleet memory complete the safety case.
+Repeated recordings of the same intersections on different days \citep{bock2020ind} and long-term roadside data \citep{yu2023v2xseq} will test cross-day transfer, time-of-day conditioning and rare-event statistics; detecting changes on real rather than simulated shifts, adaptive attackers and cross-checks between overlapping cameras, and a hybrid camera--fleet memory complete the safety case. The cost-benefit model needs local unit values (for Russian cities: value of time and crash costs by national methodology, camera prices) and robotaxi volumes that grow over the service life.
 
 % ============================================================================
 \section{Conclusion}
 Long-term memory of a place, learned by fixed infrastructure cameras, predicts what happens there later and, used as a planning prior, lets an occlusion-aware robotaxi be safer at the same speed---by about a quarter on a real Washington, DC block, more where pedestrian activity is concentrated.
 The same experiments show how it fails and how to bound the damage: memory may only add caution unless it is known to be fresh, and live information must expire.
+In money, the case for city cameras is live perception on busy robotaxi corridors, paid for by riders' and vehicles' time; memory alone is better learned by fleets.
 Autonomous driving need not be only a problem of a smarter car; part of the intelligence can live in the city, as long as the car treats it as a prior with an expiry date.
 
 \section*{Data and code availability}
-TGSIM Foggy Bottom is public (U.S.\ DOT, CC0) \citep{tgsim_fb}. DLR UT is public under CC BY-NC-SA 4.0 \citep{dlr_ut}; pNEUMA under CC BY 4.0 \citep{pneuma_zenodo}. The repository contains the full pipeline (data download, cleaning, memory, evaluation, simulator, fleet comparison), 44 unit tests and all results; Parts~1--3 reproduce in about twenty minutes on a laptop. [Repository URL to be added.]
+TGSIM Foggy Bottom is public (U.S.\ DOT, CC0) \citep{tgsim_fb}. DLR UT is public under CC BY-NC-SA 4.0 \citep{dlr_ut}; pNEUMA under CC BY 4.0 \citep{pneuma_zenodo}. The repository contains the full pipeline (data download, cleaning, memory, evaluation, simulator, fleet comparison), 51 unit tests and all results; Parts~1--3 reproduce in about twenty minutes on a laptop. [Repository URL to be added.]
 
 \section*{Acknowledgements}
 Data source: pNEUMA -- open-traffic.epfl.ch.

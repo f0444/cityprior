@@ -1,0 +1,1675 @@
+{
+ "street_len_m": 90.0,
+ "operating_v_ref": 8.0,
+ "memory_hours": 10.0,
+ "rows": [
+  {
+   "kappa": 0.0,
+   "ceiling": 1.0000000000000004,
+   "peak_to_mean": 1.0000000000000002,
+   "reference": {
+    "trip_time": 17.42361703322594,
+    "collisions_per_10k": 2.0153651419923118
+   },
+   "sources": {
+    "memory": {
+     "seconds_saved_at_equal_risk": 0.15729114535910682,
+     "reduction_at_equal_time": 0.022008587781145228,
+     "operating_point": {
+      "trip_time": 16.924287230593,
+      "collisions_per_10k": 2.111818385563732
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 37.25580014836885,
+       "collisions_per_10k": 0.07107081105262561
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 29.386620247804284,
+       "collisions_per_10k": 0.15737108161652813
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 24.48074487922324,
+       "collisions_per_10k": 0.4416543258270305
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 21.127030354718624,
+       "collisions_per_10k": 1.0000678412405175
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.724490689928977,
+       "collisions_per_10k": 1.604169735187835
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 16.924287230593,
+       "collisions_per_10k": 2.111818385563732
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 15.57366660178228,
+       "collisions_per_10k": 2.847908928608783
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 14.572059924656081,
+       "collisions_per_10k": 3.6398408231951827
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.921693281477406,
+       "collisions_per_10k": 4.233789744134982
+      }
+     ]
+    },
+    "memory, adds caution only": {
+     "seconds_saved_at_equal_risk": -0.038937235201341736,
+     "reduction_at_equal_time": -0.008113886831791817,
+     "operating_point": {
+      "trip_time": 17.474642023669904,
+      "collisions_per_10k": 2.0102886554885524
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 38.55773011149309,
+       "collisions_per_10k": 0.040611892030071775
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 30.438959727191826,
+       "collisions_per_10k": 0.13706513560149222
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 25.381146235932224,
+       "collisions_per_10k": 0.4061189203007177
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 21.927362692942477,
+       "collisions_per_10k": 0.8579262191352661
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 19.423638528038378,
+       "collisions_per_10k": 1.4366456805637888
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.474642023669904,
+       "collisions_per_10k": 2.0102886554885524
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 16.024111394555437,
+       "collisions_per_10k": 2.6194670359396293
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 14.922225035795519,
+       "collisions_per_10k": 3.3047927139470903
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.921693281477406,
+       "collisions_per_10k": 4.233789744134982
+      }
+     ]
+    },
+    "live camera, trusted": {
+     "seconds_saved_at_equal_risk": 3.494050732594756,
+     "reduction_at_equal_time": 0.9974811083123426,
+     "operating_point": {
+      "trip_time": 14.232894224502287,
+      "collisions_per_10k": 0.010152973007517944
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 16.32562677320559,
+       "collisions_per_10k": 0.005076486503758972
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 15.762408767564972,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 15.254479777912312,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 14.844085164147211,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 14.488030895577959,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 14.232894224502287,
+       "collisions_per_10k": 0.010152973007517944
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 14.080186606412143,
+       "collisions_per_10k": 0.015229459511276916
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 13.979765727705065,
+       "collisions_per_10k": 0.015229459511276916
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.929566300631185,
+       "collisions_per_10k": 0.015229459511276916
+      }
+     ]
+    },
+    "live camera, adds caution only": {
+     "seconds_saved_at_equal_risk": 3.442186819032276,
+     "reduction_at_equal_time": 1.0,
+     "operating_point": {
+      "trip_time": 16.979373430112044,
+      "collisions_per_10k": 0.0
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 37.342857254407704,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 29.46364565350178,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 24.549681203662313,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 21.190384329338748,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.784135174452594,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 16.979373430112044,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 15.629621314948007,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 14.631156188403526,
+       "collisions_per_10k": 0.010152973007517944
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.981430214193665,
+       "collisions_per_10k": 0.010152973007517944
+      }
+     ]
+    }
+   },
+   "no_memory_curve": [
+    {
+     "v_ref": 3.0,
+     "trip_time": 38.30896731413781,
+     "collisions_per_10k": 0.05584135154134869
+    },
+    {
+     "v_ref": 4.0,
+     "trip_time": 30.287668603996075,
+     "collisions_per_10k": 0.14214162210525122
+    },
+    {
+     "v_ref": 5.0,
+     "trip_time": 25.279202039089014,
+     "collisions_per_10k": 0.3959659472931997
+    },
+    {
+     "v_ref": 6.0,
+     "trip_time": 21.82717744481638,
+     "collisions_per_10k": 0.9036145976690968
+    },
+    {
+     "v_ref": 7.0,
+     "trip_time": 19.32422736682915,
+     "collisions_per_10k": 1.4671045995863428
+    },
+    {
+     "v_ref": 8.0,
+     "trip_time": 17.42361703322594,
+     "collisions_per_10k": 2.0153651419923118
+    },
+    {
+     "v_ref": 9.0,
+     "trip_time": 15.9729189005806,
+     "collisions_per_10k": 2.6702319009772193
+    },
+    {
+     "v_ref": 10.0,
+     "trip_time": 14.871671736119055,
+     "collisions_per_10k": 3.40632244402227
+    },
+    {
+     "v_ref": 11.2,
+     "trip_time": 13.87117079222089,
+     "collisions_per_10k": 4.304860555187608
+    }
+   ]
+  },
+  {
+   "kappa": 0.5,
+   "ceiling": 0.9350842079951965,
+   "peak_to_mean": 1.9917205803600635,
+   "reference": {
+    "trip_time": 17.423163797333263,
+    "collisions_per_10k": 2.1372008180825275
+   },
+   "sources": {
+    "memory": {
+     "seconds_saved_at_equal_risk": 0.522378700960374,
+     "reduction_at_equal_time": 0.09948329055865657,
+     "operating_point": {
+      "trip_time": 17.072367178677514,
+      "collisions_per_10k": 2.050900547518625
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 36.010144030548325,
+       "collisions_per_10k": 0.08122378406014356
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 28.541819871703026,
+       "collisions_per_10k": 0.2335183791729127
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 23.930418669780547,
+       "collisions_per_10k": 0.548260542405969
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.82513812397559,
+       "collisions_per_10k": 0.923920543684133
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.623163192972008,
+       "collisions_per_10k": 1.4924870321051378
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.072367178677514,
+       "collisions_per_10k": 2.050900547518625
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 15.921757920870043,
+       "collisions_per_10k": 2.6296200089471475
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 15.07041172853371,
+       "collisions_per_10k": 3.4063224440222704
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 14.419876168270168,
+       "collisions_per_10k": 3.959659472931998
+      }
+     ]
+    },
+    "memory, adds caution only": {
+     "seconds_saved_at_equal_risk": 0.20928151996776023,
+     "reduction_at_equal_time": 0.04367486082436678,
+     "operating_point": {
+      "trip_time": 18.124439497256365,
+      "collisions_per_10k": 1.7310818977818094
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 39.96515367712755,
+       "collisions_per_10k": 0.02538243251879486
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 31.7445345576049,
+       "collisions_per_10k": 0.11675918958645636
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 26.432936206794988,
+       "collisions_per_10k": 0.3401245957518511
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 22.77871600284625,
+       "collisions_per_10k": 0.6904021645112203
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 20.126347969067847,
+       "collisions_per_10k": 1.1371329768420098
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 18.124439497256365,
+       "collisions_per_10k": 1.7310818977818094
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 16.622020084436446,
+       "collisions_per_10k": 2.4011781162779937
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 15.470914884112215,
+       "collisions_per_10k": 3.0865037942854547
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 14.419876168270168,
+       "collisions_per_10k": 3.959659472931998
+      }
+     ]
+    },
+    "live camera, trusted": {
+     "seconds_saved_at_equal_risk": 3.489179863076698,
+     "reduction_at_equal_time": 1.0,
+     "operating_point": {
+      "trip_time": 14.386863615189764,
+      "collisions_per_10k": 0.02030594601503589
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 16.480516061892807,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 15.916818406801598,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 15.454764900652622,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 15.046031582144211,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 14.64308301481788,
+       "collisions_per_10k": 0.02030594601503589
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 14.386863615189764,
+       "collisions_per_10k": 0.02030594601503589
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 14.184012013843256,
+       "collisions_per_10k": 0.02030594601503589
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 14.033618119531674,
+       "collisions_per_10k": 0.030458919022553835
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.933983934256565,
+       "collisions_per_10k": 0.030458919022553835
+      }
+     ]
+    },
+    "live camera, adds caution only": {
+     "seconds_saved_at_equal_risk": 2.9428424151394665,
+     "reduction_at_equal_time": 0.997624703087886,
+     "operating_point": {
+      "trip_time": 17.131320872706496,
+      "collisions_per_10k": 0.005076486503758973
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 36.107769636572016,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 28.627653862654835,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 24.003946646653567,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.890925482800046,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.686303734628506,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.131320872706496,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 15.979073612512819,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 15.129450747227738,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 14.480321382193797,
+       "collisions_per_10k": 0.02030594601503589
+      }
+     ]
+    }
+   },
+   "no_memory_curve": [
+    {
+     "v_ref": 3.0,
+     "trip_time": 38.30924317515398,
+     "collisions_per_10k": 0.04061189203007178
+    },
+    {
+     "v_ref": 4.0,
+     "trip_time": 30.28922303457236,
+     "collisions_per_10k": 0.2182889196616358
+    },
+    {
+     "v_ref": 5.0,
+     "trip_time": 25.28033853500794,
+     "collisions_per_10k": 0.45688378533830754
+    },
+    {
+     "v_ref": 6.0,
+     "trip_time": 21.82588332552157,
+     "collisions_per_10k": 0.8528497326315074
+    },
+    {
+     "v_ref": 7.0,
+     "trip_time": 19.324658258614903,
+     "collisions_per_10k": 1.456951626578825
+    },
+    {
+     "v_ref": 8.0,
+     "trip_time": 17.423163797333263,
+     "collisions_per_10k": 2.1372008180825275
+    },
+    {
+     "v_ref": 9.0,
+     "trip_time": 15.971949350714574,
+     "collisions_per_10k": 2.8783678476313375
+    },
+    {
+     "v_ref": 10.0,
+     "trip_time": 14.87101226160478,
+     "collisions_per_10k": 3.7362940667666034
+    },
+    {
+     "v_ref": 11.2,
+     "trip_time": 13.870099759303828,
+     "collisions_per_10k": 4.624679204924424
+    }
+   ]
+  },
+  {
+   "kappa": 1.0,
+   "ceiling": 0.8166252215573646,
+   "peak_to_mean": 3.24793890698649,
+   "reference": {
+    "trip_time": 17.42243504248276,
+    "collisions_per_10k": 2.127047845075009
+   },
+   "sources": {
+    "memory": {
+     "seconds_saved_at_equal_risk": 1.2061731969171134,
+     "reduction_at_equal_time": 0.28027296404900215,
+     "operating_point": {
+      "trip_time": 17.27301592060859,
+      "collisions_per_10k": 1.5838637891727991
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 32.20546343295342,
+       "collisions_per_10k": 0.10660621657893843
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 27.192854241193466,
+       "collisions_per_10k": 0.2233654061653948
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 23.283547429476325,
+       "collisions_per_10k": 0.4822662178571024
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.528647325069354,
+       "collisions_per_10k": 0.7614729755638459
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.576126464612152,
+       "collisions_per_10k": 1.121903517330733
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.27301592060859,
+       "collisions_per_10k": 1.5838637891727991
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 16.37239911840831,
+       "collisions_per_10k": 2.005212168984794
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 15.721827148230547,
+       "collisions_per_10k": 2.5128608193606916
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.120968807683415,
+       "collisions_per_10k": 3.06112136176666
+      }
+     ]
+    },
+    "memory, adds caution only": {
+     "seconds_saved_at_equal_risk": 0.8140265364436949,
+     "reduction_at_equal_time": 0.2002559952047006,
+     "operating_point": {
+      "trip_time": 18.774856451557042,
+      "collisions_per_10k": 1.2945040584585379
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 40.065137737983854,
+       "collisions_per_10k": 0.02538243251879486
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 32.84987697925119,
+       "collisions_per_10k": 0.10152973007517944
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 27.436660595371478,
+       "collisions_per_10k": 0.2335183791729127
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 23.582316810724997,
+       "collisions_per_10k": 0.4771897313533434
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 20.827918962231156,
+       "collisions_per_10k": 0.8426967596239895
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 18.774856451557042,
+       "collisions_per_10k": 1.2945040584585379
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 17.272029748420245,
+       "collisions_per_10k": 1.7463113572930864
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 16.121752928292867,
+       "collisions_per_10k": 2.406254602781753
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.120968807683415,
+       "collisions_per_10k": 3.06112136176666
+      }
+     ]
+    },
+    "live camera, trusted": {
+     "seconds_saved_at_equal_risk": 3.4395950461295204,
+     "reduction_at_equal_time": 0.9976133651551312,
+     "operating_point": {
+      "trip_time": 14.487923395363998,
+      "collisions_per_10k": 0.005076486503758973
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 16.578204370980338,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 16.013332033172855,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 15.551616664906629,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 15.145119519369244,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 14.789639167142674,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 14.487923395363998,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 14.235383615159863,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 14.083681243449565,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.98283999635324,
+       "collisions_per_10k": 0.02030594601503589
+      }
+     ]
+    },
+    "live camera, adds caution only": {
+     "seconds_saved_at_equal_risk": 2.235806578809308,
+     "reduction_at_equal_time": 0.9976133651551312,
+     "operating_point": {
+      "trip_time": 17.350740759783182,
+      "collisions_per_10k": 0.005076486503758973
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 32.30162173220939,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 27.28646095756046,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 23.37176574748879,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.610935159756767,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.65491966082716,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.350740759783182,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 16.44556341651082,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 15.789340973117211,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.186628463673452,
+       "collisions_per_10k": 0.005076486503758973
+      }
+     ]
+    }
+   },
+   "no_memory_curve": [
+    {
+     "v_ref": 3.0,
+     "trip_time": 38.30679165891439,
+     "collisions_per_10k": 0.04061189203007178
+    },
+    {
+     "v_ref": 4.0,
+     "trip_time": 30.289480548342677,
+     "collisions_per_10k": 0.2233654061653948
+    },
+    {
+     "v_ref": 5.0,
+     "trip_time": 25.279570023452624,
+     "collisions_per_10k": 0.4467308123307896
+    },
+    {
+     "v_ref": 6.0,
+     "trip_time": 21.82608927090566,
+     "collisions_per_10k": 0.7919318945863996
+    },
+    {
+     "v_ref": 7.0,
+     "trip_time": 19.323356592330622,
+     "collisions_per_10k": 1.4061867615412351
+    },
+    {
+     "v_ref": 8.0,
+     "trip_time": 17.42243504248276,
+     "collisions_per_10k": 2.127047845075009
+    },
+    {
+     "v_ref": 9.0,
+     "trip_time": 15.971035272075252,
+     "collisions_per_10k": 2.792067577067435
+    },
+    {
+     "v_ref": 10.0,
+     "trip_time": 14.870046562521086,
+     "collisions_per_10k": 3.6550702827064603
+    },
+    {
+     "v_ref": 11.2,
+     "trip_time": 13.869165552548385,
+     "collisions_per_10k": 4.5739143398868345
+    }
+   ]
+  },
+  {
+   "kappa": 1.5,
+   "ceiling": 0.7013427917736377,
+   "peak_to_mean": 4.721599609020741,
+   "reference": {
+    "trip_time": 17.42077384132975,
+    "collisions_per_10k": 2.1828891966163577
+   },
+   "sources": {
+    "memory": {
+     "seconds_saved_at_equal_risk": 1.5305903532726859,
+     "reduction_at_equal_time": 0.3878256523884569,
+     "operating_point": {
+      "trip_time": 17.423273190983277,
+      "collisions_per_10k": 1.3351159504886096
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 30.305995880458173,
+       "collisions_per_10k": 0.15737108161652813
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 25.994920801975976,
+       "collisions_per_10k": 0.27413027120298444
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 22.634118596488083,
+       "collisions_per_10k": 0.47211324484958433
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.229749681348594,
+       "collisions_per_10k": 0.7411670295488099
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.57571466384832,
+       "collisions_per_10k": 0.9797618952254816
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.423273190983277,
+       "collisions_per_10k": 1.3351159504886096
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 16.572320215006105,
+       "collisions_per_10k": 1.7412348707893273
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 15.921142787994333,
+       "collisions_per_10k": 2.152430277593804
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.270997489311727,
+       "collisions_per_10k": 2.7920675770674346
+      }
+     ]
+    },
+    "memory, adds caution only": {
+     "seconds_saved_at_equal_risk": 1.164656468513865,
+     "reduction_at_equal_time": 0.2484915136235618,
+     "operating_point": {
+      "trip_time": 18.973568846276,
+      "collisions_per_10k": 1.1320564903382506
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 40.01593702247174,
+       "collisions_per_10k": 0.040611892030071775
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 32.95102037754405,
+       "collisions_per_10k": 0.06599432454886663
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 27.58859970509829,
+       "collisions_per_10k": 0.22336540616539477
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 23.780942588140682,
+       "collisions_per_10k": 0.47718973135334336
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 21.026525263123737,
+       "collisions_per_10k": 0.7259375700375329
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 18.973568846276,
+       "collisions_per_10k": 1.1320564903382506
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 17.422401713195942,
+       "collisions_per_10k": 1.6397051407141479
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 16.272536037540956,
+       "collisions_per_10k": 2.17273622360884
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.270997489311727,
+       "collisions_per_10k": 2.7920675770674346
+      }
+     ]
+    },
+    "live camera, trusted": {
+     "seconds_saved_at_equal_risk": 3.4373879967736762,
+     "reduction_at_equal_time": 1.0,
+     "operating_point": {
+      "trip_time": 14.535293722154588,
+      "collisions_per_10k": 0.03045891902255383
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 16.571197663266506,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 16.057610700963515,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 15.59721293977678,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 15.190663901138713,
+       "collisions_per_10k": 0.010152973007517944
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 14.8362626897644,
+       "collisions_per_10k": 0.015229459511276916
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 14.535293722154588,
+       "collisions_per_10k": 0.03045891902255383
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 14.283702714116993,
+       "collisions_per_10k": 0.03045891902255383
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 14.132288552096831,
+       "collisions_per_10k": 0.035535405526312805
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.983385844556075,
+       "collisions_per_10k": 0.035535405526312805
+      }
+     ]
+    },
+    "live camera, adds caution only": {
+     "seconds_saved_at_equal_risk": 2.0846892361543734,
+     "reduction_at_equal_time": 0.9976744186046511,
+     "operating_point": {
+      "trip_time": 17.50229897244937,
+      "collisions_per_10k": 0.005076486503758972
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 30.402073437978483,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 26.095240918645725,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 22.730357777043693,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.32007311997624,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.660644707732786,
+       "collisions_per_10k": 0.005076486503758972
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.50229897244937,
+       "collisions_per_10k": 0.005076486503758972
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 16.646121659382914,
+       "collisions_per_10k": 0.005076486503758972
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 15.98905420836984,
+       "collisions_per_10k": 0.005076486503758972
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.336084605175378,
+       "collisions_per_10k": 0.005076486503758972
+      }
+     ]
+    }
+   },
+   "no_memory_curve": [
+    {
+     "v_ref": 3.0,
+     "trip_time": 38.30810225758574,
+     "collisions_per_10k": 0.08122378406014355
+    },
+    {
+     "v_ref": 4.0,
+     "trip_time": 30.28752321227217,
+     "collisions_per_10k": 0.20813594665411783
+    },
+    {
+     "v_ref": 5.0,
+     "trip_time": 25.278549902659424,
+     "collisions_per_10k": 0.39088946078944087
+    },
+    {
+     "v_ref": 6.0,
+     "trip_time": 21.82421364423046,
+     "collisions_per_10k": 0.7970083810901587
+    },
+    {
+     "v_ref": 7.0,
+     "trip_time": 19.321995402961672,
+     "collisions_per_10k": 1.4518751400750658
+    },
+    {
+     "v_ref": 8.0,
+     "trip_time": 17.42077384132975,
+     "collisions_per_10k": 2.1828891966163577
+    },
+    {
+     "v_ref": 9.0,
+     "trip_time": 15.96994265255503,
+     "collisions_per_10k": 2.8732913611275777
+    },
+    {
+     "v_ref": 10.0,
+     "trip_time": 14.869111614142684,
+     "collisions_per_10k": 3.65507028270646
+    },
+    {
+     "v_ref": 11.2,
+     "trip_time": 13.868353487907777,
+     "collisions_per_10k": 4.6348321779319415
+    }
+   ]
+  },
+  {
+   "kappa": 2.0,
+   "ceiling": 0.6009279541190259,
+   "peak_to_mean": 6.365522087934699,
+   "reference": {
+    "trip_time": 17.420273495224833,
+    "collisions_per_10k": 2.055977034022384
+   },
+   "sources": {
+    "memory": {
+     "seconds_saved_at_equal_risk": 1.6478268225396118,
+     "reduction_at_equal_time": 0.4633795926465417,
+     "operating_point": {
+      "trip_time": 17.87700064214351,
+      "collisions_per_10k": 0.928997030187892
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 29.3033208111524,
+       "collisions_per_10k": 0.07107081105262561
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 25.593244572772264,
+       "collisions_per_10k": 0.18275351413532298
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 22.938912807059975,
+       "collisions_per_10k": 0.36550702827064596
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.734095196967314,
+       "collisions_per_10k": 0.5076486503758972
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 19.07903603851551,
+       "collisions_per_10k": 0.7056316240224971
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.87700064214351,
+       "collisions_per_10k": 0.928997030187892
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 17.025574473565147,
+       "collisions_per_10k": 1.2538921664284663
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 16.374338823205285,
+       "collisions_per_10k": 1.507716491616415
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.772446672685222,
+       "collisions_per_10k": 1.9341413579321685
+      }
+     ]
+    },
+    "memory, adds caution only": {
+     "seconds_saved_at_equal_risk": 1.6478268225396118,
+     "reduction_at_equal_time": 0.359083290269834,
+     "operating_point": {
+      "trip_time": 19.377492303800576,
+      "collisions_per_10k": 0.8477732461277484
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 39.766644556883314,
+       "collisions_per_10k": 0.035535405526312805
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 32.75147425213774,
+       "collisions_per_10k": 0.07107081105262561
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 27.843235377077605,
+       "collisions_per_10k": 0.15737108161652816
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 24.13678648536316,
+       "collisions_per_10k": 0.370583514774405
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 21.380883213202097,
+       "collisions_per_10k": 0.6193313534585946
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 19.377492303800576,
+       "collisions_per_10k": 0.8477732461277484
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 17.874743959557293,
+       "collisions_per_10k": 1.1878978418795993
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 16.77283656079669,
+       "collisions_per_10k": 1.5026400051126558
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.772446672685222,
+       "collisions_per_10k": 1.9341413579321685
+      }
+     ]
+    },
+    "live camera, trusted": {
+     "seconds_saved_at_equal_risk": 3.4861925377962475,
+     "reduction_at_equal_time": 0.9975308641975309,
+     "operating_point": {
+      "trip_time": 14.383690478047042,
+      "collisions_per_10k": 0.02538243251879486
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 16.463464880555875,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 15.899699852960703,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 15.439767456507091,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 15.036570641127934,
+       "collisions_per_10k": 0.02030594601503589
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 14.636755287814776,
+       "collisions_per_10k": 0.02030594601503589
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 14.383690478047042,
+       "collisions_per_10k": 0.02538243251879486
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 14.182875926127425,
+       "collisions_per_10k": 0.02538243251879486
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 14.032934931735886,
+       "collisions_per_10k": 0.030458919022553835
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.934080957428586,
+       "collisions_per_10k": 0.02538243251879486
+      }
+     ]
+    },
+    "live camera, adds caution only": {
+     "seconds_saved_at_equal_risk": 1.5748094454614687,
+     "reduction_at_equal_time": 0.9934892025907425,
+     "operating_point": {
+      "trip_time": 17.965927715690032,
+      "collisions_per_10k": 0.010152973007517946
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 29.40138466028964,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 25.695769304743465,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 23.041636838008795,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.83548275033767,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 19.174614373222727,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.965927715690032,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 17.109156801140728,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 16.452274500313635,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 15.845464049763365,
+       "collisions_per_10k": 0.015229459511276917
+      }
+     ]
+    }
+   },
+   "no_memory_curve": [
+    {
+     "v_ref": 3.0,
+     "trip_time": 38.308043719886484,
+     "collisions_per_10k": 0.0558413515413487
+    },
+    {
+     "v_ref": 4.0,
+     "trip_time": 30.288288131121107,
+     "collisions_per_10k": 0.1979829736465999
+    },
+    {
+     "v_ref": 5.0,
+     "trip_time": 25.279091133370507,
+     "collisions_per_10k": 0.4061189203007178
+    },
+    {
+     "v_ref": 6.0,
+     "trip_time": 21.82373840579705,
+     "collisions_per_10k": 0.8325437866164714
+    },
+    {
+     "v_ref": 7.0,
+     "trip_time": 19.321584302843004,
+     "collisions_per_10k": 1.4112632480449943
+    },
+    {
+     "v_ref": 8.0,
+     "trip_time": 17.420273495224833,
+     "collisions_per_10k": 2.055977034022384
+    },
+    {
+     "v_ref": 9.0,
+     "trip_time": 15.969463246152925,
+     "collisions_per_10k": 2.7819146040599168
+    },
+    {
+     "v_ref": 10.0,
+     "trip_time": 14.868589907526225,
+     "collisions_per_10k": 3.5992289311651118
+    },
+    {
+     "v_ref": 11.2,
+     "trip_time": 13.867828931815893,
+     "collisions_per_10k": 4.604373258909388
+    }
+   ]
+  },
+  {
+   "kappa": 3.0,
+   "ceiling": 0.4421257643833846,
+   "peak_to_mean": 9.91236103225187,
+   "reference": {
+    "trip_time": 17.420340184697118,
+    "collisions_per_10k": 2.1625832506013225
+   },
+   "sources": {
+    "memory": {
+     "seconds_saved_at_equal_risk": 1.2970474825892566,
+     "reduction_at_equal_time": 0.5606910485033609,
+     "operating_point": {
+      "trip_time": 17.92947965946894,
+      "collisions_per_10k": 0.7919318945863996
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 26.603191505406627,
+       "collisions_per_10k": 0.06599432454886664
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 23.542973499947895,
+       "collisions_per_10k": 0.13706513560149225
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 21.489627199841127,
+       "collisions_per_10k": 0.2538243251879486
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.03879470506826,
+       "collisions_per_10k": 0.42134837981199474
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.835527919310152,
+       "collisions_per_10k": 0.6142548669548357
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 17.92947965946894,
+       "collisions_per_10k": 0.7919318945863996
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 17.226555713874948,
+       "collisions_per_10k": 1.0102208142480356
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 16.626010328639058,
+       "collisions_per_10k": 1.2488156799247072
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 16.12329270210786,
+       "collisions_per_10k": 1.5889402756765583
+      }
+     ]
+    },
+    "memory, adds caution only": {
+     "seconds_saved_at_equal_risk": 1.2970474825892566,
+     "reduction_at_equal_time": 0.4803925698330649,
+     "operating_point": {
+      "trip_time": 19.531660304102054,
+      "collisions_per_10k": 0.7208610835337741
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 39.3152909914065,
+       "collisions_per_10k": 0.010152973007517946
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 32.20330094625493,
+       "collisions_per_10k": 0.05076486503758972
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 27.49547961417125,
+       "collisions_per_10k": 0.15737108161652816
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 24.140713775935772,
+       "collisions_per_10k": 0.32997162274433317
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 21.486087088028246,
+       "collisions_per_10k": 0.5076486503758972
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 19.531660304102054,
+       "collisions_per_10k": 0.7208610835337741
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 18.077743435258324,
+       "collisions_per_10k": 0.9493029762029278
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 17.025217429955347,
+       "collisions_per_10k": 1.2285097339096713
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 16.12329270210786,
+       "collisions_per_10k": 1.5889402756765583
+      }
+     ]
+    },
+    "live camera, trusted": {
+     "seconds_saved_at_equal_risk": 3.486906309286139,
+     "reduction_at_equal_time": 0.9976525821596244,
+     "operating_point": {
+      "trip_time": 14.182940615622186,
+      "collisions_per_10k": 0.015229459511276917
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 16.49846339177285,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 15.68739026125039,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 15.183880630326115,
+       "collisions_per_10k": 0.005076486503758973
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 14.733420071139905,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 14.431240161072713,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 14.182940615622186,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 14.033157139169422,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 13.934810884432984,
+       "collisions_per_10k": 0.015229459511276917
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 13.933433875410978,
+       "collisions_per_10k": 0.015229459511276917
+      }
+     ]
+    },
+    "live camera, adds caution only": {
+     "seconds_saved_at_equal_risk": 1.2203917040204821,
+     "reduction_at_equal_time": 1.0,
+     "operating_point": {
+      "trip_time": 18.024726227505557,
+      "collisions_per_10k": 0.0
+     },
+     "curve": [
+      {
+       "v_ref": 3.0,
+       "trip_time": 26.699053258480326,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 4.0,
+       "trip_time": 23.644335781102075,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 5.0,
+       "trip_time": 21.593786200673154,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 6.0,
+       "trip_time": 20.14277087798995,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 7.0,
+       "trip_time": 18.936918222082184,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 8.0,
+       "trip_time": 18.024726227505557,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 9.0,
+       "trip_time": 17.312748333747226,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 10.0,
+       "trip_time": 16.70603688861763,
+       "collisions_per_10k": 0.0
+      },
+      {
+       "v_ref": 11.2,
+       "trip_time": 16.199948480676635,
+       "collisions_per_10k": 0.0
+      }
+     ]
+    }
+   },
+   "no_memory_curve": [
+    {
+     "v_ref": 3.0,
+     "trip_time": 38.30669435657503,
+     "collisions_per_10k": 0.06091783804510767
+    },
+    {
+     "v_ref": 4.0,
+     "trip_time": 30.289739887954823,
+     "collisions_per_10k": 0.17260054112780507
+    },
+    {
+     "v_ref": 5.0,
+     "trip_time": 25.279368178654526,
+     "collisions_per_10k": 0.48734270436086136
+    },
+    {
+     "v_ref": 6.0,
+     "trip_time": 21.824005826938937,
+     "collisions_per_10k": 0.903614597669097
+    },
+    {
+     "v_ref": 7.0,
+     "trip_time": 19.32185342060742,
+     "collisions_per_10k": 1.5534048701502456
+    },
+    {
+     "v_ref": 8.0,
+     "trip_time": 17.420340184697118,
+     "collisions_per_10k": 2.1625832506013225
+    },
+    {
+     "v_ref": 9.0,
+     "trip_time": 15.970016164852431,
+     "collisions_per_10k": 2.76668514454864
+    },
+    {
+     "v_ref": 10.0,
+     "trip_time": 14.869158900486626,
+     "collisions_per_10k": 3.568770012142558
+    },
+    {
+     "v_ref": 11.2,
+     "trip_time": 13.868068004875859,
+     "collisions_per_10k": 4.69575001597705
+    }
+   ]
+  }
+ ]
+}

@@ -6,13 +6,14 @@ A robotaxi sees what is around it **now**. A fixed infrastructure camera watches
 days and months. This repository tests, on real data, whether that long-term *location memory* contains
 information a vehicle arriving for the first time does not have, and what it would cost to send it.
 
-Five questions, in order:
+Six questions, in order:
 
 1. **Does memory of a place predict what happens there later?** — on real infrastructure-camera data ([Part 1](#part-1--real-data-does-memory-predict)).
 2. **Does it help a robotaxi drive?** — closed-loop simulation calibrated on that data ([Part 2](#part-2--closed-loop-simulation-does-memory-help-a-robotaxi-drive)).
 3. **Why fixed cameras and not the fleet's own memory** (Mobileye REM, CHAMP)? — both, on the same real traffic ([Part 3](#part-3--fleet-memory-vs-infrastructure-memory)).
 4. **Do memory and live signal data add up?** — a full day at an instrumented intersection ([Part 4](#part-4--a-full-day-at-an-instrumented-intersection-dlr-ut)).
 5. **Does memory transfer across days?** — four weekday mornings over downtown Athens ([Part 5](#part-5--does-memory-transfer-across-days-pneuma)).
+6. **Where does it pay off?** — a cost-benefit model per block face with published unit values ([Part 6](#part-6--where-does-infrastructure-pay-off-cost-benefit)).
 
 **Paper (working draft):** [paper/main.pdf](paper/main.pdf) — build with `paper/build.sh` (pdflatex + bibtex).
 
@@ -25,7 +26,9 @@ passing by: on this rush-hour block a 10% fleet needs ~4× the calendar time of 
 At a second, fully instrumented intersection, memory and the live traffic-light phase **add up**: together they
 cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m), more than either alone. And memory
 **transfers across days**: memory from other mornings is 94–98% as informative as memory from the same morning at equal
-volume, and more mornings make it better than same-morning memory.
+volume, and more mornings make it better than same-morning memory. In money, the case for cameras is **live
+perception at high robotaxi volume**: a trusted live camera on a block pays off above ~3,750 robotaxi traversals a
+day, almost all of it as riders' and vehicles' time; cameras for memory alone do not pay where fleets learn their own.
 
 # Part 1 — real data: does memory predict?
 
@@ -240,6 +243,57 @@ half-hour on the other three mornings (1.5 h)**, all half-hours of the other mor
 
 ![Cross-day transfer](results/figures/pneuma1_cross_day.png)
 
+# Part 6 — where does infrastructure pay off? (cost-benefit)
+
+The unit is one **block face** like the simulated street: 90 m of kerb with parked cars. The baseline is what a
+fleet can do alone: robotaxis already use a **fleet-learned memory** (Part 3). Against it, four options for the city:
+memory from **existing CCTV** (software only), **new cameras** for memory, and a **live camera** with a roadside
+unit, either **trusted** to say "clear" (with the heartbeat, onboard priority and fleet audit of E9) or used so that
+the car is **never worse than without it** (old speed kept, benefit taken as safety only).
+
+**E14 — what one traversal gains** (simulator, by unevenness of pedestrian activity, results/value_metrics.json).
+At equal risk, memory saves 0.2–1.7 s per traversal of the block (1.2 s on this street); a trusted live camera
+saves ~3.45 s at any unevenness, because the speed limit binds. A camera whose reports may only add caution saves
+1.2–3.4 s *if the operator raises its overall speed* — but then the E9 guarantee "never worse than no camera" is gone.
+
+**Money** (2023 $, [econ.py](src/cityprior/econ.py) lists every value with its source):
+
+| Input | Base (range) | Source |
+|---|---|---|
+| discount rate | 7% (3.1%) | USDOT BCA Guidance 2025 Update II (May 2025); 2025 Update (Nov 2024) |
+| value of travel time | $21.10 / person-hour | USDOT BCA Guidance 2025, Table A-2 |
+| crash costs | K $13.2 M, injury (unknown severity) $229,800 | USDOT BCA Guidance 2025, Table A-1 |
+| robotaxi pedestrian injury crashes | 7 in 271.3 M miles (human benchmark 93) | Waymo Safety Impact hub, through June 2026 |
+| CCTV camera, furnished and installed | $6,220 ($4,575–8,018) | ITS JPO Sample Unit Cost Database, 2017–2023 entries, n = 46 |
+| roadside unit | $11,000 ($7,000–50,000) | ITS America V2X Deployment Plan (2023), via ITS JPO |
+| riders per traversal, vehicle-hour value, free-flow share, site works, edge compute, analytics, maintenance, changes per year | stated ranges | assumptions, varied in the sensitivity analysis |
+
+**E15 — results** (results/econ_metrics.json)
+
+| Option (this street) | Value per traversal | Cost | Break-even robotaxi traversals / day |
+|---|---|---|---|
+| live camera, trusted | 2.23 s beyond memory = **0.77 ¢** | $38,440 + $5,044 / year | **3,750** (Monte Carlo 90%: 2,340–7,450; 3,410 at 3.1%) |
+| live camera, never worse than none | safety only: 0.06 ¢ | same | ~50,000 |
+| memory from existing CCTV | beyond fleet memory: **≤ $6.5 / year** per site | $1,770 / year | never (1,170 / day if fleets had no memory) |
+| new cameras, memory only | same | $22,440 + $3,444 / year | never |
+
+* **Live perception is what cameras sell**, and it pays only at high robotaxi volume: 3,750 traversals a day is a
+  third of a 10,000-vehicle street. Probability of a positive NPV over parameter uncertainty: 19% at 3,000 / day,
+  98% at 10,000 / day. The break-even hardly depends on unevenness (the live camera's gain is capped by the speed
+  limit); it is moved most by the share of traversals where traffic ahead does not bind, the value of a
+  vehicle-hour and the roadside-unit cost.
+* **The benefit is time, not avoided crashes.** Robotaxis already hit pedestrians rarely, so memory taken as safety
+  is worth 0.023 ¢ per traversal vs 0.41 ¢ taken as time (18×); at the human benchmark crash rate the two would be
+  comparable. The cheaper guarantee "never worse than no camera" therefore costs almost the whole business case.
+* **Memory is worth having, not buying cameras for.** Once a fleet passes ~18 times an hour it recovers from a
+  change as fast as a camera (E8), so camera memory adds at most a few dollars a year to fleet memory, even with
+  three fleets that do not share data. Existing CCTV would pay for memory only for an operator without its own.
+* Per-traversal fee that covers a live camera: 0.96 ¢ at 3,000 traversals / day, 0.29 ¢ at 10,000, 0.10 ¢ at
+  30,000, against a value of 0.77 ¢ to the operator: a city could sell the live feed on busy corridors.
+
+![Value and NPV](results/figures/econ1_value.png)
+![Decision map and sensitivity](results/figures/econ2_decision.png)
+
 # Details
 
 ## What the memory holds
@@ -301,6 +355,8 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 # Part 4: download and unzip DLR-Urban-Traffic-dataset_v1-3-0.zip (420 MB, Zenodo 15754836) into data/raw/dlr_ut/
 .venv/bin/python -m cityprior.dlr_experiments   # ~30 s the first time; writes results/dlr_metrics.json, figures/dlr*.png
 .venv/bin/python -m cityprior.pneuma_experiments  # Part 5; streams ~1.4 GB of pNEUMA once (~10 min), then ~1.5 min
+.venv/bin/python -m cityprior.sim.value         # E14, ~8 min; writes results/value_metrics.json
+.venv/bin/python -m cityprior.econ              # Part 6, ~2 s; writes results/econ_metrics.json, figures/econ*.png
 ```
 
 ## Layout
@@ -324,6 +380,7 @@ src/cityprior/
     experiments.py  E1–E6 (Part 2)
     change.py       E8: keeping memory fresh (update strategies, sequential change detector)
     spoof.py        E9: phantom and dropped pedestrians, onboard priority, fleet audit (CUSUM)
+    value.py        E14: seconds saved and collisions avoided per traversal, by unevenness and source
     figures.py
   fleet.py        fleet sightings (line of sight on real traffic), fleet memory, E7 (Part 3)
   fleet_figures.py
@@ -333,7 +390,9 @@ src/cityprior/
   pneuma.py       pNEUMA reader: members streamed from the Zenodo zip, parsed, 5 Hz, cached
   pneuma_experiments.py  E13 (Part 5): cross-day transfer of memory
   pneuma_figures.py
-tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association, pNEUMA parsing
+  econ.py         Part 6: cost-benefit per block face, parameters with sources, Monte Carlo, tornado
+  econ_figures.py
+tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association, pNEUMA parsing, cost-benefit arithmetic
 ```
 
 ## Next steps
@@ -342,5 +401,7 @@ tests/           geometry, TTC, braking detector, memory, simulator consistency,
    conditioning (fleet exposure collapses off-peak).
 2. **Adaptive attackers** who know the audit (dropping only a few pedestrians, only where cars cannot see),
    cross-checks between overlapping cameras, and detector errors measured on real video.
-3. **Cross-day transfer for pedestrians** with repeated recordings of the same places (inD — access requested;
+3. **Russian parameter set** for Part 6 (value of time and crash costs by Russian methodology, local camera
+   prices) and robotaxi volumes that grow over the service life.
+4. **Cross-day transfer for pedestrians** with repeated recordings of the same places (inD — access requested;
    Part 5 covers vehicles only), and weather conditioning (DLR UT's day was dry).
