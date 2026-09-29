@@ -24,7 +24,7 @@ allowed to *add* caution — or a change detector notices the change, which a ca
 passing by: on this rush-hour block a 10% fleet needs ~4× the calendar time of a fixed camera, a 3% fleet ~16×.
 At a second, fully instrumented intersection, memory and the live traffic-light phase **add up**: together they
 cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m), more than either alone. And memory
-**transfers across days**: memory from other mornings is 95–98% as informative as memory from the same morning at equal
+**transfers across days**: memory from other mornings is 94–98% as informative as memory from the same morning at equal
 volume, and more mornings make it better than same-morning memory.
 
 # Part 1 — real data: does memory predict?
@@ -232,7 +232,7 @@ half-hour on the other three mornings (1.5 h)**, all half-hours of the other mor
 | heading (moving vehicles) | 83.4% | 92.7% · 0.472 bits | **92.6% · 0.463 bits** | 92.9% · 0.481 | 93.0% · 0.488 |
 | speed class | 73.2% | 73.8% · 0.060 bits | **73.8% · 0.057 bits** | 74.4% · 0.084 | 74.6% · 0.093 |
 
-* **Memory transfers across days**: at equal volume, other mornings give 98% (heading) and 95% (speed) of the
+* **Memory transfers across days**: at equal volume, other mornings give 98% (heading) and 94% (speed) of the
   information of the same morning; with three other mornings memory beats same-morning memory (102% and 139%).
 * Without the signal phase, memory predicts speed in dense Athens traffic only weakly (+0.06–0.09 bits; 3 s distance
   error 1.98 → 1.89 m) — consistent with Part 4: speed needs memory **and** live signal data.

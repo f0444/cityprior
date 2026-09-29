@@ -40,7 +40,7 @@ Memory is represented as exposure-normalised sufficient statistics with uncertai
 Two failure modes are severe: stale memory is worse than none, and a live camera that fails silently is the most dangerous state studied. Letting memory only \emph{add} caution, expiring live information with a heartbeat, and a sequential change detector, which notices a moved hotspot within an hour on camera data, remove most of the harm. Letting the vehicle's own sensors take precedence wherever they can see neutralises phantom pedestrians injected into the camera feed, and a fleet audit exposes a camera that silently drops pedestrians within hours.
 (iii)~Treating every real vehicle in the data as a potential fleet car shows that a fleet can learn the same memory, but at the pace of equipped cars passing by: at 10\pct{} penetration it needs roughly four times the calendar time of a fixed camera.
 (iv)~A full day at an instrumented intersection in Braunschweig (DLR UT) shows that location memory and the live phase of the traffic lights are complementary: together they cut the error of where a vehicle approaching a light will be in 3\,s from 4.8\,m (constant velocity) to 2.7\,m, against 3.9 and 4.2\,m for memory or live phase alone; which light governs which place is itself learned from memory.
-(v)~Over four weekday mornings in Athens (pNEUMA, 74{,}405 vehicles), memory built on other mornings is 95--98\pct{} as informative as memory of the same morning at equal volume, and more mornings make it better: location memory transfers across days.
+(v)~Over four weekday mornings in Athens (pNEUMA, 74{,}405 vehicles), memory built on other mornings is 94--98\pct{} as informative as memory of the same morning at equal volume, and more mornings make it better: location memory transfers across days.
 \end{abstract}
 
 % ============================================================================
@@ -423,7 +423,7 @@ For each test half-hour we build memory (per 4\,m cell and heading, as in Part~4
 \label{fig:pneuma}
 \end{figure}
 
-Memory transfers across days. For the heading of moving vehicles, area-wide statistics are right 83.4\pct{} of the time; memory of the same morning 92.7\pct{} (0.472 bits per sample) and memory of the other mornings, at equal volume, 92.6\pct{} (0.463 bits): 98\pct{} of the information. For the speed class the figures are 0.060 and 0.057 bits (94.5\pct). More mornings help: memory from all half-hours of three other mornings exceeds same-morning memory (102\pct{} for heading, 139\pct{} for speed).
+Memory transfers across days. For the heading of moving vehicles, area-wide statistics are right 83.4\pct{} of the time; memory of the same morning 92.7\pct{} (0.472 bits per sample) and memory of the other mornings, at equal volume, 92.6\pct{} (0.463 bits): 98\pct{} of the information. For the speed class the figures are 0.060 and 0.057 bits (94\pct). More mornings help: memory from all half-hours of three other mornings exceeds same-morning memory (102\pct{} for heading, 139\pct{} for speed).
 Without the signal phase, however, memory predicts speed in dense Athens traffic only weakly (the 3\,s distance error falls from 1.98 to 1.89\,m), which is consistent with Part~4: speed needs memory \emph{and} live signal data. Cross-day transfer for pedestrians remains to be tested.
 
 % ============================================================================
