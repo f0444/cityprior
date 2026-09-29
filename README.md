@@ -6,12 +6,13 @@ A robotaxi sees what is around it **now**. A fixed infrastructure camera watches
 days and months. This repository tests, on real data, whether that long-term *location memory* contains
 information a vehicle arriving for the first time does not have, and what it would cost to send it.
 
-Four questions, in order:
+Five questions, in order:
 
 1. **Does memory of a place predict what happens there later?** — on real infrastructure-camera data ([Part 1](#part-1--real-data-does-memory-predict)).
 2. **Does it help a robotaxi drive?** — closed-loop simulation calibrated on that data ([Part 2](#part-2--closed-loop-simulation-does-memory-help-a-robotaxi-drive)).
 3. **Why fixed cameras and not the fleet's own memory** (Mobileye REM, CHAMP)? — both, on the same real traffic ([Part 3](#part-3--fleet-memory-vs-infrastructure-memory)).
 4. **Do memory and live signal data add up?** — a full day at an instrumented intersection ([Part 4](#part-4--a-full-day-at-an-instrumented-intersection-dlr-ut)).
+5. **Does memory transfer across days?** — four weekday mornings over downtown Athens ([Part 5](#part-5--does-memory-transfer-across-days-pneuma)).
 
 **Paper (working draft):** [paper/main.pdf](paper/main.pdf) — build with `paper/build.sh` (pdflatex + bibtex).
 
@@ -22,7 +23,9 @@ Live infrastructure cameras are a far bigger lever (≈ 99% fewer), but only whi
 allowed to *add* caution — or a change detector notices the change, which a camera does within an hour. A fleet of cars can build the same memory, but it learns at the pace of equipped cars
 passing by: on this rush-hour block a 10% fleet needs ~4× the calendar time of a fixed camera, a 3% fleet ~16×.
 At a second, fully instrumented intersection, memory and the live traffic-light phase **add up**: together they
-cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m), more than either alone.
+cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m), more than either alone. And memory
+**transfers across days**: memory from other mornings is 95–97% as informative as memory from the same morning at equal
+volume, and more mornings make it better than same-morning memory.
 
 # Part 1 — real data: does memory predict?
 
@@ -213,6 +216,30 @@ small sample.
 ![Signal memory](results/figures/dlr1_signal_memory.png)
 ![Conflicts](results/figures/dlr2_conflicts.png)
 
+# Part 5 — does memory transfer across days? (pNEUMA)
+
+[pNEUMA](https://open-traffic.epfl.ch) (Barmpounakis & Geroliminis, CC BY 4.0; data source: pNEUMA – open-traffic.epfl.ch):
+a swarm of drones over downtown Athens on four weekday mornings (Wed 24, Mon 29, Tue 30 Oct, Thu 1 Nov 2018).
+Subset: two drone areas, the same four half-hours (08:30–10:30) each morning, streamed out of the 15.8 GB Zenodo zip
+with HTTP range requests; **74,405 vehicles** (28,163 cars, 26,807 motorcycles, 14,213 taxis, …), vehicles only.
+
+**E13.** For each test half-hour, memory built from the same morning's other half-hours (1.5 h), the **same
+half-hour on the other three mornings (1.5 h)**, all half-hours of the other mornings (6 h), or everything else
+(7.5 h); scored against area-wide statistics on the heading and the speed class 3 s ahead.
+
+| 3 s ahead | area-wide | same morning (1.5 h) | **other mornings (1.5 h)** | other mornings (6 h) | all (7.5 h) |
+|---|---|---|---|---|---|
+| heading (moving vehicles) | 83.4% | 92.7% · 0.472 bits | **92.6% · 0.463 bits** | 92.9% · 0.481 | 93.0% · 0.488 |
+| speed class | 73.2% | 73.8% · 0.060 bits | **73.8% · 0.057 bits** | 74.4% · 0.084 | 74.6% · 0.093 |
+
+* **Memory transfers across days**: at equal volume, other mornings give 97% (heading) and 95% (speed) of the
+  information of the same morning; with three other mornings memory beats same-morning memory (102% and 139%).
+* Without the signal phase, memory predicts speed in dense Athens traffic only weakly (+0.06–0.09 bits; 3 s distance
+  error 1.98 → 1.89 m) — consistent with Part 4: speed needs memory **and** live signal data.
+* Only vehicles: cross-day transfer for **pedestrians** awaits repeated recordings with pedestrians (inD, requested).
+
+![Cross-day transfer](results/figures/pneuma1_cross_day.png)
+
 # Details
 
 ## What the memory holds
@@ -273,6 +300,7 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 .venv/bin/python -m cityprior.sim.spoof         # E9, ~40 s; writes results/spoof_metrics.json, figures/sim5*.png
 # Part 4: download and unzip DLR-Urban-Traffic-dataset_v1-3-0.zip (420 MB, Zenodo 15754836) into data/raw/dlr_ut/
 .venv/bin/python -m cityprior.dlr_experiments   # ~30 s the first time; writes results/dlr_metrics.json, figures/dlr*.png
+.venv/bin/python -m cityprior.pneuma_experiments  # Part 5; streams ~1.4 GB of pNEUMA once (~10 min), then ~1.5 min
 ```
 
 ## Layout
@@ -302,7 +330,10 @@ src/cityprior/
   dlr.py          DLR UT loader (10 Hz common schema), traffic lights, signal heads
   dlr_experiments.py  E10-E12 (Part 4): memory + live signal phase, time of day, conflicts
   dlr_figures.py
-tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association
+  pneuma.py       pNEUMA reader: members streamed from the Zenodo zip, parsed, 5 Hz, cached
+  pneuma_experiments.py  E13 (Part 5): cross-day transfer of memory
+  pneuma_figures.py
+tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association, pNEUMA parsing
 ```
 
 ## Next steps
@@ -311,5 +342,5 @@ tests/           geometry, TTC, braking detector, memory, simulator consistency,
    conditioning (fleet exposure collapses off-peak).
 2. **Adaptive attackers** who know the audit (dropping only a few pedestrians, only where cars cannot see),
    cross-checks between overlapping cameras, and detector errors measured on real video.
-3. **Cross-day transfer** with repeated recordings of the same places (inD — access requested; pNEUMA for vehicles),
-   and weather conditioning (DLR UT's day was dry).
+3. **Cross-day transfer for pedestrians** with repeated recordings of the same places (inD — access requested;
+   Part 5 covers vehicles only), and weather conditioning (DLR UT's day was dry).
