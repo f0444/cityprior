@@ -405,3 +405,12 @@ tests/           geometry, TTC, braking detector, memory, simulator consistency,
    prices) and robotaxi volumes that grow over the service life.
 4. **Cross-day transfer for pedestrians** with repeated recordings of the same places (inD — access requested;
    Part 5 covers vehicles only), and weather conditioning (DLR UT's day was dry).
+
+## Licence, data and citation
+
+Code: [MIT](LICENSE). The datasets are **not** redistributed here; download them from their publishers and keep
+their terms: TGSIM Foggy Bottom (U.S. DOT, public domain), DLR Urban Traffic (CC BY-NC-SA 4.0, non-commercial),
+pNEUMA (CC BY 4.0; data source: pNEUMA – open-traffic.epfl.ch). To cite this work, see [CITATION.cff](CITATION.cff).
+
+The code and the text were developed with the assistance of an AI coding assistant (Claude, Anthropic); the author
+designed the study, reviewed the code and the results, and is responsible for the content.

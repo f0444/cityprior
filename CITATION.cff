@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this code or its results, please cite it as below."
+title: "CityPrior: location memory from infrastructure cameras as a prior for autonomous driving"
+authors:
+  - family-names: Gadzhibutaev
+    given-names: Gamzat
+    affiliation: "HSE University, Nizhny Novgorod"
+repository-code: "https://github.com/f0444/cityprior"
+license: MIT
+date-released: 2026-09-30
+keywords:
+  - autonomous driving
+  - infrastructure cameras
+  - location memory
+  - pedestrian safety
+  - cost-benefit analysis
