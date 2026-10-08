@@ -6,7 +6,7 @@ A robotaxi sees what is around it **now**. A fixed infrastructure camera watches
 days and months. This repository tests, on real data, whether that long-term *location memory* contains
 information a vehicle arriving for the first time does not have, and what it would cost to send it.
 
-Seven questions, in order:
+Eight questions, in order:
 
 1. **Does memory of a place predict what happens there later?** — on real infrastructure-camera data ([Part 1](#part-1--real-data-does-memory-predict)).
 2. **Does it help a robotaxi drive?** — closed-loop simulation calibrated on that data ([Part 2](#part-2--closed-loop-simulation-does-memory-help-a-robotaxi-drive)).
@@ -15,6 +15,7 @@ Seven questions, in order:
 5. **Does memory transfer across days?** — four weekday mornings over downtown Athens ([Part 5](#part-5--does-memory-transfer-across-days-pneuma)).
 6. **Where does it pay off?** — a cost-benefit model per block face with published unit values ([Part 6](#part-6--where-does-infrastructure-pay-off-cost-benefit)).
 7. **Do pedestrians step onto the road at the same places on other days?** — four German intersections filmed in several sessions ([Part 7](#part-7--pedestrian-memory-across-days-ind)).
+8. **Does memory make pedestrian and cyclist forecasts better on a day the model has not seen?** — the same intersections ([Part 8](#part-8--memory-improves-pedestrian-and-cyclist-forecasts-on-other-days-ind)).
 
 **Paper (working draft):** [paper/main.pdf](paper/main.pdf) — build with `paper/build.sh` (pdflatex + bibtex).
 
@@ -28,7 +29,8 @@ At a second, fully instrumented intersection, memory and the live traffic-light 
 cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m), more than either alone. And memory
 **transfers across days**: memory from other mornings is 94–98% as informative as memory from the same morning at equal
 volume, and more mornings make it better than same-morning memory; pedestrians, too, step onto the road at the same
-places on other days (93% of same-day information, four German intersections). In money, the case for cameras is **live
+places on other days (93% of same-day information, four German intersections), and adding memory to a
+gradient-boosting forecast cuts the 3 s error for pedestrians and cyclists on an unseen day by 10% (15% when they turn). In money, the case for cameras is **live
 perception at high robotaxi volume**: a trusted live camera on a block pays off above ~3,750 robotaxi traversals a
 day, almost all of it as riders' and vehicles' time; cameras for memory alone do not pay where fleets learn their own.
 
@@ -322,6 +324,33 @@ roadway (intervals resample whole pedestrians).
 
 ![Pedestrian memory across days](results/figures/ind1_cross_day.png)
 
+# Part 8 — memory improves pedestrian and cyclist forecasts on other days (inD)
+
+**E17.** For every pedestrian or cyclist in motion at the three inD sites with several sessions (263,627 anchors every
+0.4 s, 5,215 tracks, 22% cyclists), predict the position 1, 2 and 3 s ahead from the last 1.2 s of the track:
+constant velocity; **memory only** (mean displacement of road users in the same 1 m cell heading the same way);
+**kinematics** (gradient boosting on the agent's own recent motion, residual to constant velocity); **kinematics +
+memory** (the same with memory features at 1 m and 3 m). Leave-one-session-out: the test session is a day the model
+has not seen, and memory comes only from other days — also for training rows, whose memory excludes their own
+session, so the model never learns to trust a memory that contains its own future.
+
+| 3 s position error | constant velocity | memory only | kinematics | **kinematics + memory** | memory vs kinematics |
+|---|---|---|---|---|---|
+| all | 1.14 m | 1.65 m | 0.94 m | **0.85 m** | −10% [−0.095, −0.087 m] |
+| pedestrians | 0.71 | 1.04 | 0.67 | **0.59** | −12% |
+| cyclists | 2.65 | 3.82 | 1.93 | **1.80** | −6.5% |
+| turning > 30° in 3 s (14%) | 3.12 | 2.68 | 2.22 | **1.88** | **−15%** [−0.36, −0.32 m] |
+| going straight | 0.81 | 1.48 | 0.73 | **0.68** | −7% |
+
+* **Memory from other days improves the forecast in every one of the eight held-out sessions**, most where people
+  change direction — the movements state-of-the-art predictors miss in dense mixed traffic (HetroD, arXiv 2602.03447).
+* Memory alone is worse than constant velocity (it knows where people go, not how fast this one walks): it is
+  useful as an addition to a motion model, not a replacement.
+* Gains grow with the horizon (1 s: 0.15 → 0.15 m; 3 s: 0.94 → 0.85 m): memory matters where the agent's own past
+  says little about the future.
+
+![Forecasts with memory](results/figures/ind2_prediction.png)
+
 # Details
 
 ## What the memory holds
@@ -387,6 +416,7 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 .venv/bin/python -m cityprior.econ              # Part 6, ~2 s; writes results/econ_metrics.json, figures/econ*.png
 # Part 7: unzip inD-dataset-v1.1.zip (access on request, levelxdata.com) into data/raw/inD/
 .venv/bin/python -m cityprior.ind_experiments   # ~10 s; writes results/ind_metrics.json, figures/ind1_cross_day.png
+.venv/bin/python -m cityprior.ind_predict       # Part 8, ~4 min CPU; writes results/ind_predict_metrics.json, figures/ind2_prediction.png
 ```
 
 ## Layout
@@ -424,6 +454,7 @@ src/cityprior/
   econ_figures.py
   ind.py          inD reader, roadway from vehicle paths, pedestrian road entries, memory density
   ind_experiments.py  E16 (Part 7): pedestrian memory across days
+  ind_predict.py  E17 (Part 8): pedestrian and cyclist forecasts with memory, leave-one-session-out
   ind_figures.py
 tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association, pNEUMA parsing, cost-benefit arithmetic
 ```

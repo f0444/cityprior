@@ -57,3 +57,44 @@ def fig_cross_day(path: Path, res: dict, maps: dict):
     fig.tight_layout()
     fig.savefig(path, dpi=130)
     plt.close(fig)
+
+
+PRED_COLORS = {"constant velocity": "#9b9a96", "memory only": ORANGE, "kinematics": BLUE, "kinematics + memory": VIOLET}
+
+
+def fig_prediction(path: Path, res: dict):
+    fig, axs = plt.subplots(1, 2, figsize=(15, 5.4), gridspec_kw={"width_ratios": [0.85, 1.15]})
+    ax = axs[0]
+    e = res["errors"]["all"]
+    hs = [1, 2, 3]
+    for m, c in PRED_COLORS.items():
+        ys = [e[m][f"{h}s"][0] for h in hs]
+        ax.plot(hs, ys, color=c, lw=2, marker="o", label=m)
+    ax.set_xticks(hs, ["1 s", "2 s", "3 s"])
+    ax.set_xlabel("prediction horizon")
+    ax.set_ylabel("position error (m)")
+    ax.set_title("a  Pedestrians and cyclists on a day the model has not seen", loc="left")
+    ax.legend(loc="upper left", fontsize=9)
+    ax.grid(True, color=GRID, lw=0.6)
+
+    ax = axs[1]
+    subs = [("all", "all"), ("pedestrians", "pedestrians"), ("cyclists", "cyclists"), ("manoeuvring", "turning\n(>30° in 3 s)"),
+            ("straight", "going straight")]
+    w = 0.2
+    for i, m in enumerate(PRED_COLORS):
+        xs = np.arange(len(subs)) + (i - 1.5) * w
+        ys = [res["errors"][s][m]["3s"][0] for s, _ in subs]
+        lo = [res["errors"][s][m]["3s"][0] - res["errors"][s][m]["3s"][1] for s, _ in subs]
+        hi = [res["errors"][s][m]["3s"][2] - res["errors"][s][m]["3s"][0] for s, _ in subs]
+        ax.bar(xs, ys, w * 0.92, color=PRED_COLORS[m], yerr=[lo, hi], capsize=2, ecolor=INK, label=m)
+    for j, (s, _) in enumerate(subs):
+        g = res["errors"][s]["gain_memory_over_kinematics_3s"]
+        top = max(res["errors"][s][m]["3s"][2] for m in PRED_COLORS)
+        ax.text(j + 1.5 * w, top + 0.05, f"−{100 * g:.0f}%", ha="center", fontsize=9, color=VIOLET, weight="bold")
+    ax.set_xticks(range(len(subs)), [l for _, l in subs])
+    ax.set_ylabel("position error at 3 s (m)")
+    ax.set_title("b  3 s error by group (label: memory vs. kinematics alone)", loc="left")
+    ax.grid(True, axis="y", color=GRID, lw=0.6)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
