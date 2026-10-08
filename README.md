@@ -30,7 +30,8 @@ cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m
 **transfers across days**: memory from other mornings is 94–98% as informative as memory from the same morning at equal
 volume, and more mornings make it better than same-morning memory; pedestrians, too, step onto the road at the same
 places on other days (93% of same-day information, four German intersections), and adding memory to a
-gradient-boosting forecast cuts the 3 s error for pedestrians and cyclists on an unseen day by 10% (15% when they turn). In money, the case for cameras is **live
+gradient-boosting forecast with context cuts the 3 s error for pedestrians and cyclists on an unseen day by a
+further 5% (13% when they turn). In money, the case for cameras is **live
 perception at high robotaxi volume**: a trusted live camera on a block pays off above ~3,750 robotaxi traversals a
 day, almost all of it as riders' and vehicles' time; cameras for memory alone do not pay where fleets learn their own.
 
@@ -328,26 +329,35 @@ roadway (intervals resample whole pedestrians).
 
 **E17.** For every pedestrian or cyclist in motion at the three inD sites with several sessions (263,627 anchors every
 0.4 s, 5,215 tracks, 22% cyclists), predict the position 1, 2 and 3 s ahead from the last 1.2 s of the track:
-constant velocity; **memory only** (mean displacement of road users in the same 1 m cell heading the same way);
-**kinematics** (gradient boosting on the agent's own recent motion, residual to constant velocity); **kinematics +
-memory** (the same with memory features at 1 m and 3 m). Leave-one-session-out: the test session is a day the model
-has not seen, and memory comes only from other days — also for training rows, whose memory excludes their own
-session, so the model never learns to trust a memory that contains its own future.
 
-| 3 s position error | constant velocity | memory only | kinematics | **kinematics + memory** | memory vs kinematics |
-|---|---|---|---|---|---|
-| all | 1.14 m | 1.65 m | 0.94 m | **0.85 m** | −10% [−0.095, −0.087 m] |
-| pedestrians | 0.71 | 1.04 | 0.67 | **0.59** | −12% |
-| cyclists | 2.65 | 3.82 | 1.93 | **1.80** | −6.5% |
-| turning > 30° in 3 s (14%) | 3.12 | 2.68 | 2.22 | **1.88** | **−15%** [−0.36, −0.32 m] |
-| going straight | 0.81 | 1.48 | 0.73 | **0.68** | −7% |
+* **constant velocity**;
+* **memory only**: how road users who were in the same 1 m cell heading the same way moved on (forward progress and
+  sideways share relative to their own speed, shares turning left and right), applied to this agent's speed;
+* **kinematics**: gradient boosting on the agent's own recent motion (residual to constant velocity);
+* **kinematics + context**, the strong baseline: plus the nearest vehicle and the nearest other pedestrian or cyclist
+  (relative position, velocity, time and distance of closest approach) and the crowd within 5 m;
+* **kinematics + context + memory**.
 
-* **Memory from other days improves the forecast in every one of the eight held-out sessions**, most where people
-  change direction — the movements state-of-the-art predictors miss in dense mixed traffic (HetroD, arXiv 2602.03447).
-* Memory alone is worse than constant velocity (it knows where people go, not how fast this one walks): it is
-  useful as an addition to a motion model, not a replacement.
-* Gains grow with the horizon (1 s: 0.15 → 0.15 m; 3 s: 0.94 → 0.85 m): memory matters where the agent's own past
-  says little about the future.
+Leave-one-session-out: the test session is a day the model has not seen, and memory comes only from other days —
+also for training rows, whose memory excludes their own session, so the model never learns to trust a memory that
+contains its own future.
+
+| 3 s position error | constant velocity | memory only | kinematics | kinematics + context | **+ memory** | memory over the strong baseline |
+|---|---|---|---|---|---|---|
+| all | 1.14 m | 1.03 m | 0.94 m | 0.89 m | **0.84 m** | −5.2% [−0.050, −0.043 m] |
+| pedestrians | 0.71 | 0.69 | 0.67 | 0.63 | **0.58** | −7.3% |
+| cyclists | 2.65 | 2.26 | 1.93 | 1.82 | **1.77** | −2.6% |
+| turning > 30° in 3 s (14%) | 3.12 | **2.16** | 2.22 | 2.09 | **1.82** | **−12.8%** [−0.28, −0.25 m] |
+| going straight | 0.81 | 0.85 | 0.73 | 0.69 | **0.68** | −1.4% |
+| a vehicle within 10 m | 1.17 | 1.06 | 0.98 | 0.93 | **0.88** | −5.1% |
+
+* **Memory from other days improves the forecast on top of a strong baseline in all eight held-out sessions**,
+  most where people change direction — the movements state-of-the-art predictors miss in dense mixed traffic
+  (HetroD, arXiv 2602.03447). Altogether the model is 26% better than constant velocity.
+* Memory alone, scaled to the agent's speed, beats constant velocity (1.03 vs 1.14 m) and, for turning agents,
+  even the kinematic model (2.16 vs 2.22 m).
+* **How much memory**: about 11 minutes of other days (10% of the recordings) already help (0.871 vs 0.890 m);
+  the full ~1.9 hours per site give 0.843 m, and the curve has not flattened.
 
 ![Forecasts with memory](results/figures/ind2_prediction.png)
 
@@ -416,7 +426,7 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 .venv/bin/python -m cityprior.econ              # Part 6, ~2 s; writes results/econ_metrics.json, figures/econ*.png
 # Part 7: unzip inD-dataset-v1.1.zip (access on request, levelxdata.com) into data/raw/inD/
 .venv/bin/python -m cityprior.ind_experiments   # ~10 s; writes results/ind_metrics.json, figures/ind1_cross_day.png
-.venv/bin/python -m cityprior.ind_predict       # Part 8, ~4 min CPU; writes results/ind_predict_metrics.json, figures/ind2_prediction.png
+.venv/bin/python -m cityprior.ind_predict       # Part 8, ~11 min CPU; writes results/ind_predict_metrics.json, figures/ind2_prediction.png
 ```
 
 ## Layout
@@ -454,7 +464,7 @@ src/cityprior/
   econ_figures.py
   ind.py          inD reader, roadway from vehicle paths, pedestrian road entries, memory density
   ind_experiments.py  E16 (Part 7): pedestrian memory across days
-  ind_predict.py  E17 (Part 8): pedestrian and cyclist forecasts with memory, leave-one-session-out
+  ind_predict.py  E17 (Part 8): pedestrian and cyclist forecasts with context and memory, leave-one-session-out
   ind_figures.py
 tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association, pNEUMA parsing, cost-benefit arithmetic
 ```

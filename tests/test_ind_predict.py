@@ -34,5 +34,16 @@ def test_memory_predicts_the_turn_that_kinematics_cannot_see():
     old, new = P.anchors(walkers(True, 0), meta([0])), P.anchors(walkers(True, 1), meta([1]))
     before_turn = new[(new["x"] >= 8) & (new["x"] < 10)]
     m = P.memory_features(before_turn, old)
-    # straight-ahead constant velocity misses the turn; memory says "they go left" (positive agent-frame y)
-    assert (m["m1_15_y"] > 0.5).all() and (m["m1_15_x"] < 0).all()
+    # straight-ahead constant velocity misses the turn; memory says "they go left" (positive sideways share) and get
+    # less far forward, and the share that turned left is high
+    assert (m["m1_py15"] > 0.1).all() and (m["m1_px15"] < 1).all() and (m["m1_left"] > 0.5).all()
+
+
+def test_context_finds_the_nearest_vehicle_in_the_agent_frame():
+    ped = walkers(False, 0, n=1)                                   # walks east along y = 0 at 1.25 m/s
+    car = ped.assign(track=99, cls="car", y=4.0, x=ped["x"] + 6.0)   # 6 m ahead, 4 m to the left, same speed
+    a = P.anchors(ped, meta([0]))
+    c = P.context_features(a, pd.concat([ped, car], ignore_index=True))
+    assert np.allclose(c["veh_rx"], 6.0, atol=1e-6) and np.allclose(c["veh_ry"], 4.0, atol=1e-6)
+    assert np.allclose(c["veh_dist"], np.hypot(6, 4)) and np.allclose(c["veh_rvx"], 0, atol=1e-6)
+    assert c["vru_dist"].isna().all() and (c["crowd5"] == 0).all()
