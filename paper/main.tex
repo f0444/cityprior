@@ -33,7 +33,7 @@ Location Memory from Infrastructure Cameras as a Prior for Autonomous Driving}
 \begin{abstract}
 A robotaxi perceives a place only while it is there; a fixed camera watches the same place for hours, days and months.
 We ask whether this long-term \emph{location memory} is worth anything to an autonomous vehicle, and when it becomes a liability.
-Memory is represented as exposure-normalised sufficient statistics with uncertainty---where pedestrians step onto the road, how traffic turns, where vehicles brake hard---and is evaluated in six steps.
+Memory is represented as exposure-normalised sufficient statistics with uncertainty---where pedestrians step onto the road, how traffic turns, where vehicles brake hard---and is evaluated in seven steps.
 (i)~On two hours of real trajectories from 12 fixed 4K infrastructure cameras in Washington, DC (TGSIM Foggy Bottom), memory built from the first 79 minutes predicts the last 40:
 73\pct{} of held-out pedestrian road entries fall inside the 10\pct{} of road area it ranks highest (2.27 bits per entry over a uniform prior), and for vehicles that change direction it picks their heading 3\,s ahead correctly 59\pct{} of the time, against 19\pct{} for area-wide statistics.
 (ii)~In a closed-loop occlusion simulation calibrated on the same data, an occlusion-aware planner with 10 hours of memory has 26\pct{} fewer pedestrian collisions at equal trip time (95\pct{} CI 20--33\pct) than a planner that knows only the street's average pedestrian rate, matching perfect knowledge; the benefit grows with the spatial unevenness of pedestrian activity, from 0 to 56\pct.
@@ -42,6 +42,7 @@ Two failure modes are severe: stale memory is worse than none, and a live camera
 (iv)~A full day at an instrumented intersection in Braunschweig (DLR UT) shows that location memory and the live phase of the traffic lights are complementary: together they cut the error of where a vehicle approaching a light will be in 3\,s from 4.8\,m (constant velocity) to 2.7\,m, against 3.9 and 4.2\,m for memory or live phase alone; which light governs which place is itself learned from memory.
 (v)~Over four weekday mornings in Athens (pNEUMA, 74{,}405 vehicles), memory built on other mornings is 94--98\pct{} as informative as memory of the same morning at equal volume, and more mornings make it better: location memory transfers across days.
 (vi)~A cost-benefit model per block face, with published unit values, shows where this pays: a trusted live camera on a block breaks even at about 3{,}750 robotaxi traversals a day (90\pct{} interval 2{,}340--7{,}450), almost entirely through riders' and vehicles' time rather than avoided crashes, whereas cameras installed for memory alone do not pay where fleets learn their own.
+(vii)~At four intersections in Aachen filmed in several sessions on different weekdays (inD), memory of where pedestrians step onto the road built on other days keeps 93\pct{} of the information of same-day memory at equal volume: pedestrian memory, too, transfers across days.
 \end{abstract}
 
 % ============================================================================
@@ -68,7 +69,7 @@ The questions are therefore empirical: does memory predict what happens later, d
 \item A closed-loop, rare-event simulation calibrated on the same data that quantifies the safety--time benefit, its dependence on the unevenness of pedestrian activity and on camera coverage, and two failure modes with mitigations (\S\ref{sec:sim}).
 \item A fleet-versus-infrastructure comparison on real traffic showing that fleet memory is limited by exposure rather than by quality (\S\ref{sec:fleet}).
 \item Evidence from a second, fully instrumented intersection that location memory and live signal phase add up, with the association between places and traffic lights learned from memory (\S\ref{sec:dlr}).
-\item Evidence from four weekday mornings in Athens that location memory transfers across days (\S\ref{sec:pneuma}).
+\item Evidence from four weekday mornings in Athens that location memory transfers across days (\S\ref{sec:pneuma}), and from four German intersections that pedestrian memory does too (\S\ref{sec:ind}).
 \item A cost-benefit model per block face that combines the simulated effects with published unit values and shows which infrastructure pays off at which robotaxi volume (\S\ref{sec:econ}).
 \end{enumerate}
 All code, tests and results are in the accompanying repository and reproduce on a laptop in about twenty minutes.
@@ -426,7 +427,7 @@ For each test half-hour we build memory (per 4\,m cell and heading, as in Part~4
 \end{figure}
 
 Memory transfers across days. For the heading of moving vehicles, area-wide statistics are right 83.4\pct{} of the time; memory of the same morning 92.7\pct{} (0.472 bits per sample) and memory of the other mornings, at equal volume, 92.6\pct{} (0.463 bits): 98\pct{} of the information. For the speed class the figures are 0.060 and 0.057 bits (94\pct). More mornings help: memory from all half-hours of three other mornings exceeds same-morning memory (102\pct{} for heading, 139\pct{} for speed).
-Without the signal phase, however, memory predicts speed in dense Athens traffic only weakly (the 3\,s distance error falls from 1.98 to 1.89\,m), which is consistent with Part~4: speed needs memory \emph{and} live signal data. Cross-day transfer for pedestrians remains to be tested.
+Without the signal phase, however, memory predicts speed in dense Athens traffic only weakly (the 3\,s distance error falls from 1.98 to 1.89\,m), which is consistent with Part~4: speed needs memory \emph{and} live signal data. Cross-day transfer for pedestrians is tested in Part~7 (\S\ref{sec:ind}).
 
 % ============================================================================
 \section{Part 6: where does infrastructure pay off?}
@@ -480,6 +481,22 @@ A per-traversal fee that covers a live camera is 0.96\,\textcent{} at 3{,}000 tr
 \end{figure}
 
 % ============================================================================
+\section{Part 7: do pedestrians cross at the same places on other days?}
+\label{sec:ind}
+
+Part~5 had no pedestrians. The inD dataset \citep{bock2020ind} recorded four intersections in Aachen from a drone, 33 recordings of 13--22 minutes with all road users in one metric frame per site. We group recordings into sessions---consecutive recordings on the same weekday---which leaves three sites with several sessions: site~1 (Tuesday, Monday, a second Tuesday session; 3.1\,h), site~2 (Tuesday, Wednesday; 4.0\,h) and site~4 (Wednesday, Tuesday, Monday; 1.8\,h).
+The roadway of a site is where vehicles drive, taken from all sessions because it is geometry rather than behaviour; a road entry is a pedestrian stepping onto it after at least a second off it. For each recording, memory of road entries (a 1\,m grid smoothed with $\sigma=1.5$\,m, mixed with 10\pct{} uniform) is built from the other recordings of the same session, from other sessions subsampled to the same number of entries (20 draws), or from all other sessions, and scored on the recording's own entries against a uniform prior over the roadway, with intervals that resample whole pedestrians.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{ind1_cross_day.png}
+\caption{Pedestrian memory across days at four intersections in Aachen (inD). (a) Information gain per held-out road entry over a uniform prior on the roadway, by where memory comes from. (b) Site~2: the 10\pct{} of road area ranked highest by memory from one day and the road entries of the other day.}
+\label{fig:ind}
+\end{figure}
+
+Pedestrian memory transfers across days (Figure~\ref{fig:ind}). Over 2{,}542 held-out entries, same-session memory gains 2.59 bits per entry [2.51, 2.66], memory from other days at equal volume 2.40 [2.32, 2.48]---93\pct{} of the information---and all other days 2.46 [2.38, 2.53]; 78\pct{} of a recording's entries fall into the 10\pct{} of road area that memory from other days ranks highest (79\pct{} for same-day memory). The ratio is 99\pct{} at the busiest site (1{,}718 entries), 87\pct{} at site~1 and 58\pct{} at site~4, where equal volume leaves only about 47 entries of memory and the interval is wide.
+
+% ============================================================================
 \section{Discussion}
 \label{sec:discussion}
 
@@ -495,13 +512,13 @@ Five rules follow from the experiments.
 Fixed cameras give memory in hours instead of days, independent of traffic volume, provide live perception beyond a vehicle's line of sight, and accumulate the exposure needed for rare events. Fleets cover places without cameras and can keep a camera's memory fresh; a hybrid memory with change detection is the natural next system. In money the division of labour is sharper (\S\ref{sec:econ}): where robotaxis are frequent, fleets supply memory at no extra cost and cameras pay for themselves through live perception; where they are rare, neither pays per block yet.
 
 \paragraph{Limitations.}
-Part~1 uses two hours of one sunny weekday afternoon at one site, and Part~4 one dry Sunday at another; Part~5 tests cross-day transfer for vehicles only, weather is not yet tested, and rare events remain out of reach.
+Part~1 uses two hours of one sunny weekday afternoon at one site, and Part~4 one dry Sunday at another; Parts~5 and~7 test transfer across days of the same season, not across weeks or seasons, weather is not yet tested, and rare events remain out of reach.
 The data contain road users only inside road polygons, and neither sidewalks nor buildings, so occlusion and infrastructure lead times are underestimated.
 The simulator is stylised: a one-dimensional longitudinal planner, 2-D line of sight, one pedestrian per episode, a synthetic parked row, pedestrians from the near side only and a free inattentive share; outside the attack experiments the camera never raises false alarms, which flatters live infrastructure, and the attacks themselves are simple: an adaptive attacker who knows the audit is not modelled.
 Memory learned from human behaviour is a prior, not a policy: that most drivers do something at a place does not make it safe.
 
 \paragraph{Next steps.}
-Repeated recordings of the same intersections on different days \citep{bock2020ind} and long-term roadside data \citep{yu2023v2xseq} will test cross-day transfer, time-of-day conditioning and rare-event statistics; detecting changes on real rather than simulated shifts, adaptive attackers and cross-checks between overlapping cameras, and a hybrid camera--fleet memory complete the safety case. The cost-benefit model needs local unit values (for Russian cities: value of time and crash costs by national methodology, camera prices) and robotaxi volumes that grow over the service life.
+Long-term roadside data \citep{yu2023v2xseq} will test transfer across weeks and seasons, time-of-day conditioning and rare-event statistics; detecting changes on real rather than simulated shifts, adaptive attackers and cross-checks between overlapping cameras, and a hybrid camera--fleet memory complete the safety case. The cost-benefit model needs local unit values (for Russian cities: value of time and crash costs by national methodology, camera prices) and robotaxi volumes that grow over the service life.
 
 % ============================================================================
 \section{Conclusion}
@@ -511,7 +528,7 @@ In money, the case for city cameras is live perception on busy robotaxi corridor
 Autonomous driving need not be only a problem of a smarter car; part of the intelligence can live in the city, as long as the car treats it as a prior with an expiry date.
 
 \section*{Data and code availability}
-TGSIM Foggy Bottom is public (U.S.\ DOT, CC0) \citep{tgsim_fb}. DLR UT is public under CC BY-NC-SA 4.0 \citep{dlr_ut}; pNEUMA under CC BY 4.0 \citep{pneuma_zenodo}. The repository contains the full pipeline (data download, cleaning, memory, evaluation, simulator, fleet comparison), 51 unit tests and all results; Parts~1--3 reproduce in about twenty minutes on a laptop. Code and results: \url{https://github.com/f0444/cityprior} (MIT licence).
+TGSIM Foggy Bottom is public (U.S.\ DOT, CC0) \citep{tgsim_fb}. DLR UT is public under CC BY-NC-SA 4.0 \citep{dlr_ut}; pNEUMA under CC BY 4.0 \citep{pneuma_zenodo}; inD is free for non-commercial use on request and is not redistributed \citep{bock2020ind}. The repository contains the full pipeline (data download, cleaning, memory, evaluation, simulator, fleet comparison), 53 unit tests and all results; Parts~1--3 reproduce in about twenty minutes on a laptop. Code and results: \url{https://github.com/f0444/cityprior} (MIT licence).
 
 \section*{Acknowledgements}
 Data source: pNEUMA -- open-traffic.epfl.ch.

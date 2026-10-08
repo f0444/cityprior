@@ -6,7 +6,7 @@ A robotaxi sees what is around it **now**. A fixed infrastructure camera watches
 days and months. This repository tests, on real data, whether that long-term *location memory* contains
 information a vehicle arriving for the first time does not have, and what it would cost to send it.
 
-Six questions, in order:
+Seven questions, in order:
 
 1. **Does memory of a place predict what happens there later?** — on real infrastructure-camera data ([Part 1](#part-1--real-data-does-memory-predict)).
 2. **Does it help a robotaxi drive?** — closed-loop simulation calibrated on that data ([Part 2](#part-2--closed-loop-simulation-does-memory-help-a-robotaxi-drive)).
@@ -14,6 +14,7 @@ Six questions, in order:
 4. **Do memory and live signal data add up?** — a full day at an instrumented intersection ([Part 4](#part-4--a-full-day-at-an-instrumented-intersection-dlr-ut)).
 5. **Does memory transfer across days?** — four weekday mornings over downtown Athens ([Part 5](#part-5--does-memory-transfer-across-days-pneuma)).
 6. **Where does it pay off?** — a cost-benefit model per block face with published unit values ([Part 6](#part-6--where-does-infrastructure-pay-off-cost-benefit)).
+7. **Do pedestrians step onto the road at the same places on other days?** — four German intersections filmed in several sessions ([Part 7](#part-7--pedestrian-memory-across-days-ind)).
 
 **Paper (working draft):** [paper/main.pdf](paper/main.pdf) — build with `paper/build.sh` (pdflatex + bibtex).
 
@@ -26,7 +27,8 @@ passing by: on this rush-hour block a 10% fleet needs ~4× the calendar time of 
 At a second, fully instrumented intersection, memory and the live traffic-light phase **add up**: together they
 cut the 3 s position error of vehicles approaching a light by 44% (4.8 → 2.7 m), more than either alone. And memory
 **transfers across days**: memory from other mornings is 94–98% as informative as memory from the same morning at equal
-volume, and more mornings make it better than same-morning memory. In money, the case for cameras is **live
+volume, and more mornings make it better than same-morning memory; pedestrians, too, step onto the road at the same
+places on other days (93% of same-day information, four German intersections). In money, the case for cameras is **live
 perception at high robotaxi volume**: a trusted live camera on a block pays off above ~3,750 robotaxi traversals a
 day, almost all of it as riders' and vehicles' time; cameras for memory alone do not pay where fleets learn their own.
 
@@ -239,7 +241,7 @@ half-hour on the other three mornings (1.5 h)**, all half-hours of the other mor
   information of the same morning; with three other mornings memory beats same-morning memory (102% and 139%).
 * Without the signal phase, memory predicts speed in dense Athens traffic only weakly (+0.06–0.09 bits; 3 s distance
   error 1.98 → 1.89 m) — consistent with Part 4: speed needs memory **and** live signal data.
-* Only vehicles: cross-day transfer for **pedestrians** awaits repeated recordings with pedestrians (inD, requested).
+* Only vehicles here; cross-day transfer for **pedestrians** is tested in [Part 7](#part-7--pedestrian-memory-across-days-ind).
 
 ![Cross-day transfer](results/figures/pneuma1_cross_day.png)
 
@@ -293,6 +295,32 @@ saves ~3.45 s at any unevenness, because the speed limit binds. A camera whose r
 
 ![Value and NPV](results/figures/econ1_value.png)
 ![Decision map and sensitivity](results/figures/econ2_decision.png)
+
+# Part 7 — pedestrian memory across days (inD)
+
+[inD](https://www.levelxdata.com/ind-dataset) (Bock et al., IEEE IV 2020; free for non-commercial use, not
+redistributed here): drone recordings of four intersections in Aachen, 33 recordings of 13–22 minutes, all road users
+in metres in one frame per site. Sessions are runs of recordings on the same weekday: site 1 Tue / Mon / Tue
+(another session), site 2 Tue / Wed, site 4 Wed / Tue / Mon; site 3 has one session and is left out.
+
+**E16.** The roadway of a site is where vehicles drive (all sessions; it is geometry, not behaviour); a road entry is
+a pedestrian stepping onto it after at least a second off it. For each recording, memory of entries is built from
+the other recordings of the **same session**, from **other sessions** subsampled to the same number of entries
+(20 draws), or from all other sessions, and scored on the recording's own entries against a uniform prior over the
+roadway (intervals resample whole pedestrians).
+
+| 2,542 held-out entries (3 sites) | same session | **other days, equal volume** | other days, all |
+|---|---|---|---|
+| information gain (bits / entry) | 2.59 [2.51, 2.66] | **2.40 [2.32, 2.48]** | 2.46 [2.38, 2.53] |
+| entries in the top 10% of road area | 79% | **78%** | 78% |
+
+* **Pedestrian memory transfers across days**: memory from other days keeps 93% of the information of same-day
+  memory at equal volume, and 77–78% of a day's road entries fall in the 10% of road area memory from other days
+  ranks highest.
+* By site: 99% of same-day information at site 2 (1,718 entries), 87% at site 1 (671), 58% at site 4 (196 entries;
+  equal volume leaves only ~47 entries of memory, wide interval).
+
+![Pedestrian memory across days](results/figures/ind1_cross_day.png)
 
 # Details
 
@@ -357,6 +385,8 @@ Outputs: `results/metrics.json`, `results/figures/*.png`.
 .venv/bin/python -m cityprior.pneuma_experiments  # Part 5; streams ~1.4 GB of pNEUMA once (~10 min), then ~1.5 min
 .venv/bin/python -m cityprior.sim.value         # E14, ~8 min; writes results/value_metrics.json
 .venv/bin/python -m cityprior.econ              # Part 6, ~2 s; writes results/econ_metrics.json, figures/econ*.png
+# Part 7: unzip inD-dataset-v1.1.zip (access on request, levelxdata.com) into data/raw/inD/
+.venv/bin/python -m cityprior.ind_experiments   # ~10 s; writes results/ind_metrics.json, figures/ind1_cross_day.png
 ```
 
 ## Layout
@@ -392,6 +422,9 @@ src/cityprior/
   pneuma_figures.py
   econ.py         Part 6: cost-benefit per block face, parameters with sources, Monte Carlo, tornado
   econ_figures.py
+  ind.py          inD reader, roadway from vehicle paths, pedestrian road entries, memory density
+  ind_experiments.py  E16 (Part 7): pedestrian memory across days
+  ind_figures.py
 tests/           geometry, TTC, braking detector, memory, simulator consistency, fleet line of sight, change detection, attacks, signal association, pNEUMA parsing, cost-benefit arithmetic
 ```
 
@@ -403,14 +436,14 @@ tests/           geometry, TTC, braking detector, memory, simulator consistency,
    cross-checks between overlapping cameras, and detector errors measured on real video.
 3. **Russian parameter set** for Part 6 (value of time and crash costs by Russian methodology, local camera
    prices) and robotaxi volumes that grow over the service life.
-4. **Cross-day transfer for pedestrians** with repeated recordings of the same places (inD — access requested;
-   Part 5 covers vehicles only), and weather conditioning (DLR UT's day was dry).
+4. **Longer time spans** — weeks and seasons rather than sessions days apart — and weather conditioning (DLR UT's
+   day was dry).
 
 ## Licence, data and citation
 
 Code: [MIT](LICENSE). The datasets are **not** redistributed here; download them from their publishers and keep
 their terms: TGSIM Foggy Bottom (U.S. DOT, public domain), DLR Urban Traffic (CC BY-NC-SA 4.0, non-commercial),
-pNEUMA (CC BY 4.0; data source: pNEUMA – open-traffic.epfl.ch). To cite this work, see [CITATION.cff](CITATION.cff).
+pNEUMA (CC BY 4.0; data source: pNEUMA – open-traffic.epfl.ch), inD (non-commercial, on request; Bock et al. 2020). To cite this work, see [CITATION.cff](CITATION.cff).
 
 The code and the text were developed with the assistance of an AI coding assistant (Claude, Anthropic); the author
 designed the study, reviewed the code and the results, and is responsible for the content.
